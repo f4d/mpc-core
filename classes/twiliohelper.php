@@ -1,15 +1,15 @@
 <?
 class TwilioHelper {
-	static public function sendToGroup($str,$toArr) {
+	static public function sendToGroup($str,$toArr,$callbackUrl) {
 		foreach ($toArr as $to) {
-			TwilioHelper::sendMsg($str,$to);
+			TwilioHelper::sendMsg($str,$to,$callbackUrl);
 		}
 	}
-	static public function sendMsg($str,$to) {
+	static public function sendMsg($str,$to,$callbackUrl) {
 		$account_sid = "ACb7c5f3d51adb05223c640ffaff969b46"; // Your Twilio account sid
 		$auth_token = "d54280461d5603d9cc2217ca2b79ab62"; // Your Twilio auth token
 		$client = new Services_Twilio($account_sid, $auth_token);
-		$callbackUrl = TwilioHelper::prepUrl('/wp-json/petguardian/v1/twilio-response');
+		//$callbackUrl = TwilioHelper::prepUrl('/wp-json/petguardian/v1/twilio-response');
 		$message = $client->account->messages->create(array( 
 			'To' => TwilioHelper::scrubPhone($to), 
 			'From' => " +13134448630", 

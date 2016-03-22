@@ -19,9 +19,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // exit if accessed directly!
 }
 require_once('classes.php');
+require_once('vendor/autoload.php');
+require_once('classes/twiliohelper.php');
 class Mpc_Core {
 	public function __construct() {
-		//$d = new Dummy('U h4v3 git class!!!'); 
+		$formId = '1';
+		$gformStr = "gform_pre_submission_{$formId}";
+		$this->add_action( $gformStr, 'filterGform' );
+		//
+		//
+	}
+	public function add_action($action,$method, $args=1) {
+		add_action( $action, [$this, $method], 10, $args );
+	}
+	public function filterGform($form) {
+		/*
+		$post = $_POST;
+		$pet_owner_id = $post['input_11'];
+		$user = UserHelper::findUser($pet_owner_id);
+		//if user not valid
+		if($user===false) {
+			//$this->invalidUser();
+		} else {
+			//TwilioHelper::createAndSend($user,$pet_owner_id,$post);
+		} */
+		TwilioHelper::sendToGroup('Boo!',['7736092730','7736411561'],
+			'http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/twilio-response');
+		
 	}
 	static public function alertGuardians($pets,$userId) {
 		$alerts = new StdClass;
