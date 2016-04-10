@@ -9,7 +9,7 @@ class Notification {
 		}
 		$str = "Pet Guardian Alert! First Responder: $name, Phone: $phone. $msg";
 		return $str;
-	}	
+	}
 	static public function createAndSend($user,$pet_owner_id,$post) {
 		$data = get_metadata('user', $user->ID);
 		$primary = rgar(rgar($data,'mobile_phone'),0);
@@ -39,7 +39,7 @@ class Notification {
 		}
 		if ($primary == 0 && $alerted->sent == 0) {$okay = 'false';}
 		TwilioHelper::createConfirmation($okay,$msg);
-	}	
+	}
 	static public function alertPrimary($str,$number,$userId) {
 		if($number == '' || $number =='_____') {
 			return 0;
@@ -56,5 +56,5 @@ class Notification {
 			}
 			return 1;
 		}
-	}	
+	}
 }
