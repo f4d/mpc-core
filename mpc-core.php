@@ -20,7 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 require_once('classes.php');
 require_once('vendor/autoload.php');
-require_once('classes/twiliohelper.php');
+//require_once('classes/twiliohelper.php');
+require_once('classes/petowner.php');
 class Mpc_Core {
 	public function __construct() {
 		$formId = '1';
@@ -43,8 +44,9 @@ class Mpc_Core {
 		} else {
 			//TwilioHelper::createAndSend($user,$pet_owner_id,$post);
 		} */
-		TwilioHelper::sendToGroup('Boo!',['7736092730','7736411561'],
-			'http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/twilio-response');
+		//TwilioHelper::sendToGroup('Boo!',['7736092730','7736411561'],
+		//	'http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/twilio-response');
+		include('tests/petownertest.php');
 		
 	}
 	static public function alertGuardians($pets,$userId) {
