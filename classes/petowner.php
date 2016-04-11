@@ -1,6 +1,10 @@
 <?php 
 class PetOwner {
 	public $user;
+	public $data = [];
+	public $numOfPets = 0;
+	public $pets = [];
+	public $petOwnerId = '9000000000';
 	public function __construct($key) {
 		// 9647665452 example pet owner ID
 		if (preg_match("/9\d{9}/",$key)===1) {
@@ -11,7 +15,36 @@ class PetOwner {
 		} else {
 			$this->user = PetOwner::findByEmail($key);
 		}
+		if($this->user !== false) {
+			//get the user metadata
+			$this->_setVars();
+		} else {
+			$this->data = array();
+			$this->numOfPets = 0;
+		}
 		return $this->user;
+	}
+	private function _setVars() {
+			$this->data = get_metadata('user', $this->user->ID);
+			$this->petOwnerId = PetOwner::getMetaVal($this->data,'pet_owner_id');
+			$this->numOfPets = PetOwner::numOfPets($this->data);
+			for($i=1;$i<($this->numOfPets+1);$i++) {
+				$this->pets[$i] = Pet::getPet($this->petOwnerId,$i,$this->data);
+				//$pets[$i]->msg = TwilioHelper::createMessage($post,$pets[$i]);
+			}
+
+	}
+	public static function getMetaVal($data,$key) {
+		$q = rgar($data, $key);
+		return $q[0];
+	}
+	public static function numOfPets($data) {
+		$pets = rgar($data,'how_many_pets_owned');
+		if(rgar($pets,0) != '') {
+			return (int) $pets[0];
+		} else {
+			return 0;
+		}
 	}
 	public static function find($petOwnerId) {
 		$user = false;
