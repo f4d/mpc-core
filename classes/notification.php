@@ -4,7 +4,15 @@ class Notification{
 	public function __construct($petOwner) {
 		$this->petOwner = $petOwner;
 	}
-	public function parseForm($str,$post) {
+	public function parseGuardianTemplate($str,$post,$guardian) {
+		$loader = new Twig_Loader_Array(array('index' => $str));
+		$twig = new Twig_Environment($loader);
+		return $twig->render('index', array(
+			'post'=>$post,
+			'petowner' => $this->petOwner,
+			'guardian' => $guardian));				
+	}	
+	public function parseOwnerTemplate($str,$post) {
 		$loader = new Twig_Loader_Array(array('index' => $str));
 		$twig = new Twig_Environment($loader);
 		return $twig->render('index', array('post'=>$post,'petowner' => $this->petOwner));				
