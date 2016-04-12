@@ -9,13 +9,15 @@ class NotificationTest extends Microtest {
 	}
 	public function parseForm() {
 		$owner = new PetOwner('cyborgk@gmail.com');
-		$post = Notification::filterPost();
-		print_r($post);
-		$str = "Your message: {{ post.1 }}. ";
-		$str .= 'You have {{petowner.numOfPets}} pets.';
-		//$str .= ' View the petfile(s) at {{petfileUrl}}';
 		$n = new Notification($owner);
-		$this->log( $n->parseForm($str,$post) );
-		return 1;
+		$post = Notification::filterPost();
+		$str = $n->parseForm("Your message: {{ post.1 }}. ",$post);
+		$str2 = $n->parseForm('You have {{petowner.numOfPets}} pets.',$post);
+		//$str .= ' View the petfile(s) at {{petfileUrl}}';
+		$this->log( $str.$str2 );
+		return ($str2 == 'You have 3 pets.');
+	}
+	public function parseGuardianData() {
+
 	}
 }
