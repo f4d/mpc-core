@@ -24,6 +24,7 @@ require_once('classes/twiliohelper.php');
 require_once('classes/petowner.php');
 require_once('classes/pet.php');
 require_once('classes/guardian.php');
+require_once('classes/notification.php');
 require_once('tests/microtest.php');
 require_once('tests/petownertest.php');
 require_once('tests/notificationtest.php');
@@ -52,11 +53,10 @@ class Mpc_Core {
 		//	'http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/twilio-response');
 	}
 	public function filterGform($form) {
-
 		$test = new PetOwnerTest();
 		echo $test->log;
-		//$test = new NotificationTest();
-		//echo $test->log;		
+		$test = new NotificationTest();
+		echo $test->log;		
 		exit();
 	}
 	static public function alertGuardians($pets,$userId) {
