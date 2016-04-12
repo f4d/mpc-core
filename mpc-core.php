@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 require_once('classes.php');
 require_once('vendor/autoload.php');
-//require_once('classes/twiliohelper.php');
+require_once('classes/twiliohelper.php');
 require_once('classes/petowner.php');
 require_once('classes/pet.php');
 require_once('classes/guardian.php');

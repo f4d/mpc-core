@@ -8,68 +8,56 @@ class PetOwnerTest extends Microtest {
 		$this->add('testInvalidPet');
 		$this->add('testValidEmail');
 		$this->add('testInvalidEmail');		
+		$this->add('testGetAllGuardians');		
 	}
 	protected function cleanup() {
 		$this->log("PetOwnerTest cleanup.");
 	}
 	public function testValidOwner() {
-		$this->log("PetOwnerTest testValidOwner.");		
+		$this->log("PetOwnerTest testValidOwnerId.");		
 		// 9647665452 example pet owner ID
 		$owner = new PetOwner('9647665452');
-		print_r($owner->user);
-		echo("<br>");
-		print_r($owner->pets);
-		echo("<br>");
+		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user !== false);
 	}
 	public function testInvalidOwner() {
-		$this->log("PetOwnerTest testInvalidOwner.");		
+		$this->log("PetOwnerTest testInvalidOwnerId.");		
 		// 9647665452 example pet owner ID
 		$owner = new PetOwner('9000000000');
-		print_r($owner->user);
-		echo("<br>");
-		print_r($owner->pets);
-		echo("<br>");
+		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user === false);
 	}
 	public function testValidPet() {
-		$this->log("PetOwnerTest testValidPet.");		
+		$this->log("PetOwnerTest testValidPetId.");		
 		// 1274276602 example pet ID
 		$owner = new PetOwner('1274276602');
-		print_r($owner->user);
-		echo("<br>");
-		print_r($owner->pets);
-		echo("<br>");
+		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user !== false);
 	}	
 	public function testInvalidPet() {
-		$this->log("PetOwnerTest testInvalidPet.");		
+		$this->log("PetOwnerTest testInvalidPetId.");		
 		// 1274276602 example pet ID
 		$owner = new PetOwner('1000000000');
-		print_r($owner->user);
-		echo("<br>");
-		print_r($owner->pets);
-		echo("<br>");
+		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user === false);
 	}
 	public function testValidEmail() {
-		$this->log("PetOwnerTest testValidPet.");		
-		// 1274276602 example pet ID
+		$this->log("PetOwnerTest testValidOwnerEmail.");		
 		$owner = new PetOwner('cyborgk@gmail.com');
-		print_r($owner->user);
-		echo("<br>");
-		print_r($owner->pets);
-		echo("<br>");
+		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user !== false);
 	}
 	public function testInvalidEmail() {
-		$this->log("PetOwnerTest testInvalidPet.");		
-		// 1274276602 example pet ID
+		$this->log("PetOwnerTest testInvalidOwnerEmail.");		
 		$owner = new PetOwner('bookoo');
-		print_r($owner->user);
-		echo("<br>");
-		print_r($owner->pets);
-		echo("<br>");
+		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user === false);
 	}
+	public function testGetAllGuardians() {
+		$this->log("PetOwnerTest testGetAllGuardians.");		
+		$owner = new PetOwner('cyborgk@gmail.com');
+		$g = $owner->getAllGuardians();
+		$this->log("Number of guardians for adminpowers: ".count($g));
+		return (count($g) === 3);
+	}	
 }

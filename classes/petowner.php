@@ -29,10 +29,17 @@ class PetOwner {
 			$this->petOwnerId = PetOwner::getMetaVal($this->data,'pet_owner_id');
 			$this->numOfPets = PetOwner::numOfPets($this->data);
 			for($i=1;$i<($this->numOfPets+1);$i++) {
-				$this->pets[$i] = Pet::getPet($this->petOwnerId,$i,$this->data);
+				$this->pets[$i] = new Pet($i,$this->petOwnerId,$this->data);
 				//$pets[$i]->msg = TwilioHelper::createMessage($post,$pets[$i]);
 			}
 
+	}
+	public function getAllGuardians() {
+		$g = [];
+		for($i=1;$i<($this->numOfPets+1);$i++) {
+			$g = array_merge($g,$this->pets[$i]->guardians);
+		}
+		return $g;
 	}
 	public static function getMetaVal($data,$key) {
 		$q = rgar($data, $key);

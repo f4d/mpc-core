@@ -1,7 +1,9 @@
 <?php
 class Guardian {
 	public $prefix, $first_name, $last_name, $email, $mobile_phone, $response;
-	public function __construct( $meta ) {
+	public function __construct( $meta, $petId, $petfileUrl = '' ) {
+		$this->petId = $petId;
+		$this->petfileUrl = $petfileUrl;
 		$this->mobile_phone = rgar( $meta, 'mobile_phone' );
 		$this->response = rgar( $meta, 'response' );
 		$this->prefix = rgar( $meta, 'prefix' );
