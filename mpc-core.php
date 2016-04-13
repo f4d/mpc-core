@@ -26,6 +26,7 @@ require_once('classes/petowner.php');
 require_once('classes/pet.php');
 require_once('classes/guardian.php');
 require_once('classes/notification.php');
+require_once('classes/notificationpost.php');
 require_once('tests/microtest.php');
 require_once('tests/petownertest.php');
 require_once('tests/notificationtest.php');
@@ -36,6 +37,7 @@ class Mpc_Core {
 		$formId = '1';
 		$gformStr = "gform_pre_submission_{$formId}";
 		$this->add_action( $gformStr, 'filterGform' );
+		$np = new NotificationPost();
 	}
 	public function add_action($action,$method, $args=1) {
 		add_action( $action, [$this, $method], 100, $args );
@@ -53,9 +55,9 @@ class Mpc_Core {
 		} */
 	}
 	public function filterGform($form) {
-		TwilioHelper::sendToGroup('Boo!',
-			['7736092730','7736411561'],
-			'http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/twilio-response');
+		//TwilioHelper::sendToGroup('Boo!',
+		//	['7736092730','7736411561'],
+		//	'http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/twilio-response');
 		$test = new PetOwnerTest();
 		echo $test->log;
 		$test = new NotificationTest();

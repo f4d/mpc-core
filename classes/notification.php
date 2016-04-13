@@ -27,4 +27,7 @@ class Notification{
 		}
 		return $post;
 	}
+	static public function getTemplate($post_id) {
+		return esc_attr(get_post_meta( $post_id, '_notification_text', true ));
+	}
 }

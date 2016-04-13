@@ -22,14 +22,13 @@ class NotificationTest extends Microtest {
 	public function parseGuardianTemplate() {
 		$this->log("parseGuardianTemplate test.");
 		$owner = new PetOwner('cyborgk@gmail.com');
-		$guardian = $owner->pets[1]->guardians[1];
-		
+		$guardian = $owner->pets[1]->guardians[1];		
 		$n = new Notification($owner);
 		$post = Notification::filterPost();
-		$str = $n->parseGuardianTemplate("Your message: {{ post.1 }}. ",$post,$guardian);
-		$str2 = $n->parseGuardianTemplate('{{guardian.first_name}} {{guardian.last_name}} View the petfile(s) at {{guardian.petfileUrl}}',$post,$guardian);
-		$this->log( $str.$str2 );
-		return ($str2 == 'Draven Powers View the petfile(s) at http://petguardian.staging.wpengine.com/guardian-access-petfile-1/?eid=
-');
+		$template = "{{guardian.first_name}} {{guardian.last_name}} View the petfile(s) at {{guardian.petfileUrl}}";
+		$str = $n->parseGuardianTemplate($template,$post,$guardian);
+		$this->log( $str );
+		$expected = 'Draven Powers View the petfile(s) at http://petguardian.staging.wpengine.com/guardian-access-petfile-1/?eid=';
+		return ($str == $expected);
 	}
 }

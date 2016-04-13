@@ -14,10 +14,11 @@ class TwilioMessageTest extends Microtest {
 		$guardians = $owner->getValidGuardians();
 		$post = Notification::filterPost();
 		foreach ($guardians as $guardian) {
-			$str = "Your message: {{ post.1 }}. {{guardian.first_name}} {{guardian.last_name}} View the petfile(s) at {{guardian.petfileUrl}}";
-			$msg = $n->parseGuardianTemplate($str,$post,$guardian);
+			$template = Notification::getTemplate(7);
+			$msg = $n->parseGuardianTemplate($template,$post,$guardian);
 			$message = new TwilioMessage($guardian->mobile_phone,$msg);
 			$message->send();
 		}
+		return true;
 	}
 }
