@@ -9,6 +9,7 @@ class PetOwnerTest extends Microtest {
 		$this->add('testValidEmail');
 		$this->add('testInvalidEmail');		
 		$this->add('testGetAllGuardians');		
+		$this->add('testGetValidGuardians');		
 	}
 	protected function cleanup() {
 		$this->log("PetOwnerTest cleanup.");
@@ -60,4 +61,12 @@ class PetOwnerTest extends Microtest {
 		$this->log("Number of guardians for adminpowers: ".count($g));
 		return (count($g) === 3);
 	}	
+	public function testGetValidGuardians() {
+		//user id 92
+		$this->log("PetOwnerTest testGetAllGuardians.");		
+		$owner = new PetOwner('cyborgk@gmail.com');
+		$g = $owner->getValidGuardians();
+		$this->log("Number of valid guardians for adminpowers: ".count($g));
+		return (count($g) === 2);
+	}		
 }

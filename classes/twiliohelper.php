@@ -29,6 +29,14 @@ class TwilioHelper {
 		if (array_key_exists('HTTPS', $_SERVER)) {
 			$http = "https://";
 		} 
-		return $http.$_SERVER['SERVER_NAME'].$url;
+
+		return $http.TwilioHelper::getServerName().$url;
+	}
+	static public function getServerName() {
+		if ($_SERVER['SERVER_NAME']==="localhost") {
+			return "petguardian.staging.wpengine.com";
+		} else {
+			return $_SERVER['SERVER_NAME'];
+		}
 	}
 }

@@ -41,6 +41,16 @@ class PetOwner {
 		}
 		return $g;
 	}
+	public function getValidGuardians() {
+		$g = [];
+		$all = $this->getAllGuardians();
+		foreach ($all as $guardian) {
+			if($guardian->response==="1") {
+				$g[] = $guardian;
+			}
+		}
+		return $g;
+	}
 	public static function getMetaVal($data,$key) {
 		$q = rgar($data, $key);
 		return $q[0];

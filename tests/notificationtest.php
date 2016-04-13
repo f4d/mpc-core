@@ -29,7 +29,7 @@ class NotificationTest extends Microtest {
 		$str = $n->parseGuardianTemplate("Your message: {{ post.1 }}. ",$post,$guardian);
 		$str2 = $n->parseGuardianTemplate('{{guardian.first_name}} {{guardian.last_name}} View the petfile(s) at {{guardian.petfileUrl}}',$post,$guardian);
 		$this->log( $str.$str2 );
-		return ($str2 == 'Draven Powers View the petfile(s) at http://localhost/guardian-access-petfile-1/?eid=');
-	}	
-
+		return ($str2 == 'Draven Powers View the petfile(s) at http://petguardian.staging.wpengine.com/guardian-access-petfile-1/?eid=
+');
+	}
 }
