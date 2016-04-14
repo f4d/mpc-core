@@ -55,7 +55,7 @@ class PetOwner {
 	}
 	public static function getMetaVal($data,$key) {
 		$q = rgar($data, $key);
-		return $q[0];
+		return rgar($q, 0);
 	}
 	public static function numOfPets($data) {
 		$pets = rgar($data,'how_many_pets_owned');

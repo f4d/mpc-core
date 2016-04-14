@@ -83,7 +83,7 @@ class Mpc_Core {
 		$n = new Notification($owner);
 		$post = Notification::filterPost();
 		if ($_SERVER['SERVER_NAME']==="localhost") {$templateId = '8';}
-		else {$templateId = '8'; }
+		else {$templateId = '1973'; }
 		$template = Notification::getTemplate($templateId);
 		$msg = $n->parseOwnerTemplate($template,$post);
 		$message = new TwilioMessage($owner->phone,$msg,$owner);
@@ -103,7 +103,7 @@ class Mpc_Core {
 		$sent = [];
 		foreach ($guardians as $guardian) {
 			if ($_SERVER['SERVER_NAME']==="localhost") {$templateId = '7';}
-			else {$templateId = '7'; }
+			else {$templateId = '1974'; }
 			$template = Notification::getTemplate($templateId);
 			$msg = $n->parseGuardianTemplate($template,$post,$guardian);
 			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);

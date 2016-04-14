@@ -17,6 +17,7 @@ class TwilioMessage {
 			  $this->result = 1;
 			} catch (Exception $e) {
 				//mark number as bad, update user meta, send emails
+				//print_r($e);
 				$this->badNumber();
 				$this->result = -1;
 			}
@@ -24,9 +25,9 @@ class TwilioMessage {
 	}
 	public function badNumber() {
 		//PhoneNumber::updateNumberHealth($phoneNumber->number,'failed'); 
-		echo "bad number!";
+		//echo "bad number!";
 		if((is_a($this->dataObj, 'Guardian'))) {
-			echo 'bad Guardian! number...';
+			//echo 'bad Guardian! number...';
 			$guardian = $this->dataObj;
 			$owner = new PetOwner($guardian->petId);
 			UserHelper::updateGuardianNumber($owner->user->ID,$guardian->petNum,$guardian->guardNum,'___');
