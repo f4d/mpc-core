@@ -29,30 +29,48 @@ require_once('tests/twiliomessagetest.php');
 
 class Mpc_Core {
 	public function __construct() {
-		$formId = '1';
-		$gformStr = "gform_pre_submission_{$formId}";
-		$this->add_action( $gformStr, 'filterGform' );
+		//run code for custom post type - NotificationPost
 		$np = new NotificationPost();
+		//test code
+		if ($_SERVER['SERVER_NAME']==="localhost") {$formId = '1';}
+		else {$formId = '69'; }
+		$gformStr = "gform_pre_submission_{$formId}";
+		$this->add_action( $gformStr, 'runTests' );
+
+		//$phoneFormId = '68';
+		//first responder code
+		$firstRespFormId = '62';
+		$firstRespString = "gform_pre_submission_{$firstRespFormId}";
+		$filterStr = "gform_confirmation_{$firstRespFormId}";
+		//$this->add_action( $firstRespString, 'filterFirstResponder' );
+		//$this->add_action( $firstRespString, 'filterConfirmation' );
+
+		add_action( 'rest_api_init', function () {
+		    register_rest_route( 'petguardian/v1', '/twilio-response', array(
+		        'methods' => 'POST',
+		        'callback' => array('PhoneNumber','smsCallback')
+		    ) );
+		} );		
 	}
+	public function filterConfirmation($confirmation,$form,$entry) {
+		$confirmation = $entry['12'];
+		return $confirmation;
+	}
+	public function filterFirstResponder($form) {
+		$owner = new PetOwner($_POST['input_11']);
+		//if user not valid
+		if($owner->user===false) {
+			TwilioHelper::createConfirmation("Invalid Pet Owner ID submitted. No alerts have been sent, please verify the pet owner ID number and try again.");
+		} else {
+			$confirmation = $this->alertPrimary($owner);
+			$confirmation .= $this->alertGuardians($owner);
+			TwilioHelper::createConfirmation($confirmation);
+		}
+	}	
 	public function add_action($action,$method, $args=1) {
 		add_action( $action, [$this, $method], 100, $args );
 	}
-	public function __archive($form) {
-		/*
-		$post = $_POST;
-		$pet_owner_id = $post['input_11'];
-		$user = UserHelper::findUser($pet_owner_id);
-		//if user not valid
-		if($user===false) {
-			//$this->invalidUser();
-		} else {
-			//TwilioHelper::createAndSend($user,$pet_owner_id,$post);
-		} */
-	}
-	public function filterGform($form) {
-		//TwilioHelper::sendToGroup('Boo!',
-		//	['7736092730','7736411561'],
-		//	'http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/twilio-response');
+	public function runTests($form) {
 		$test = new PetOwnerTest();
 		echo $test->log;
 		$test = new NotificationTest();
@@ -61,28 +79,45 @@ class Mpc_Core {
 		echo $test->log;		
 		exit();
 	}
-	static public function alertGuardians($owner) {
-		$alerts = new StdClass;
-		$alerts->sent = 0;
-		$alerts->total = 0;
-		$owner = new PetOwner('cyborgk@gmail.com');
-
-		$guardians = $owner->getValidGuardians();
-		foreach($p->guardians as $g) {
-			/*
-			//check the number, if it's new, save to the db
-			$phoneNumber = PhoneNumber::lookup($g->mobile_phone,$userId);
-			if($g->response==='1' && $phoneNumber->health != "bad") {
-				$alerts->sent++;
-				$alerts->total++;
-				
-			} else {
-				//don't send to an invalid number
-			}
-			$gNum++;*/
+	public function alertPrimary($owner) {
+		$n = new Notification($owner);
+		$post = Notification::filterPost();
+		if ($_SERVER['SERVER_NAME']==="localhost") {$templateId = '8';}
+		else {$templateId = '8'; }
+		$template = Notification::getTemplate($templateId);
+		$msg = $n->parseOwnerTemplate($template,$post);
+		$message = new TwilioMessage($owner->phone,$msg,$owner);
+		$message->send();
+		if($message->result === -1) {
+			$msg = "Warning: We were unable to send a message to the primary pet owner. ";
+		} else {
+			$msg = "Message sent to the primary pet owner. ";
 		}
-		//$alerts->failed = $alerts->total - $alerts->sent;
-		//return $alerts;
+		return $msg;
 	}
+	public function alertGuardians($owner) {
+		$n = new Notification($owner);
+		$post = Notification::filterPost();
+		$guardians = $owner->getValidGuardians();
+		$post = Notification::filterPost();
+		$sent = [];
+		foreach ($guardians as $guardian) {
+			if ($_SERVER['SERVER_NAME']==="localhost") {$templateId = '7';}
+			else {$templateId = '7'; }
+			$template = Notification::getTemplate($templateId);
+			$msg = $n->parseGuardianTemplate($template,$post,$guardian);
+			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);
+			$message->send();
+			$sent[] = $message;
+		}
+		$results = TwilioMessage::msgResults($sent);
+		$msg = "We are attempting to send ".$results->attempted." messages to Pet Guardians. ";
+		$msg .= "Warning: We were unable to send ".$results->failed." messages to Pet Guardians. ";
+		return $msg;
+	}
+	private function invalidUser() {
+		return 0;
+	}	
+
 }
 new Mpc_Core();

@@ -35,12 +35,12 @@ class TwilioMessage {
 
 	}
 	public static function msgResults($messages) {
-		$good = 0;
-		$bad = 0;
+		$attempted = 0;
+		$failed = 0;
 		foreach ($messages as $m) {
-			if ($m->result === -1) {$bad++;}
-			elseif ($m->result === 1) {$good++;}
+			if ($m->result === -1) {$failed++;}
+			elseif ($m->result === 1) {$attempted++;}
 		}
-		return ['good'=>$good,'bad'=>$bad];
+		return (object) ['attempted'=>$attempted,'failed'=>$failed];
 	}
 }

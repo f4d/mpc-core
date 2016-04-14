@@ -1,5 +1,10 @@
 <?
 class TwilioHelper {
+	const MESSAGE_FIELD = 'input_12';
+	//
+	static public function createConfirmation($message) {
+		$_POST[TwilioHelper::MESSAGE_FIELD] = $message;
+	}
 	static public function sendToGroup($str,$toArr,$callbackUrl) {
 		foreach ($toArr as $to) {
 			TwilioHelper::sendMsg($str,$to,$callbackUrl);
