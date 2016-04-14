@@ -59,7 +59,7 @@ class PetOwnerTest extends Microtest {
 		$owner = new PetOwner('cyborgk@gmail.com');
 		$g = $owner->getAllGuardians();
 		$this->log("Number of guardians for adminpowers: ".count($g));
-		return (count($g) === 3);
+		return (count($g) === 7);
 	}	
 	public function testGetValidGuardians() {
 		//user id 92
@@ -67,6 +67,6 @@ class PetOwnerTest extends Microtest {
 		$owner = new PetOwner('cyborgk@gmail.com');
 		$g = $owner->getValidGuardians();
 		$this->log("Number of valid guardians for adminpowers: ".count($g));
-		return (count($g) === 2);
+		return (count($g) === 4);
 	}		
 }

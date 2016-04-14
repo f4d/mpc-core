@@ -18,15 +18,10 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // exit if accessed directly!
 }
-require_once('classes.php');
+
 require_once('vendor/autoload.php');
-require_once('classes/twiliohelper.php');
-require_once('classes/twiliomessage.php');
-require_once('classes/petowner.php');
-require_once('classes/pet.php');
-require_once('classes/guardian.php');
-require_once('classes/notification.php');
-require_once('classes/notificationpost.php');
+require_once('classes/autoload.php');
+
 require_once('tests/microtest.php');
 require_once('tests/petownertest.php');
 require_once('tests/notificationtest.php');
@@ -66,40 +61,28 @@ class Mpc_Core {
 		echo $test->log;		
 		exit();
 	}
-	static public function alertGuardians($pets,$userId) {
+	static public function alertGuardians($owner) {
 		$alerts = new StdClass;
 		$alerts->sent = 0;
 		$alerts->total = 0;
-		foreach($pets as $p) {
-			$gNum = 1;
-			foreach($p->guardians as $g) {
-				if ( $g->mobile_phone == '' || $g->mobile_phone == '_____' ) {
-					//skip
-				} else {
-					//check the number, if it's new, save to the db
-					$phoneNumber = PhoneNumber::lookup($g->mobile_phone,$userId);
-					if($g->response==='1' && $phoneNumber->health != "bad") {
-						$alerts->sent++;
-						$alerts->total++;
-						try {
-						  TwilioHelper::sendMsg($p->msg,$phoneNumber->number);
-						} catch (Exception $e) {
-							$alerts->sent--;
-							//mark number as bad, update user meta, send emails
-							PhoneNumber::updateNumberHealth($phoneNumber->number,'failed'); 
-							UserHelper::updateGuardianNumber($userId,$p->petfile,$gNum,'___');
-							mail ( 'admin@petguardianinc.com' , 'Bad Number: Pet Guardian' , $e->getMessage() );
-						}
-					} else {
-						//don't send to an invalid number
-					}
-					$gNum++;					
-				}
+		$owner = new PetOwner('cyborgk@gmail.com');
 
+		$guardians = $owner->getValidGuardians();
+		foreach($p->guardians as $g) {
+			/*
+			//check the number, if it's new, save to the db
+			$phoneNumber = PhoneNumber::lookup($g->mobile_phone,$userId);
+			if($g->response==='1' && $phoneNumber->health != "bad") {
+				$alerts->sent++;
+				$alerts->total++;
+				
+			} else {
+				//don't send to an invalid number
 			}
+			$gNum++;*/
 		}
-		$alerts->failed = $alerts->total - $alerts->sent;
-		return $alerts;
+		//$alerts->failed = $alerts->total - $alerts->sent;
+		//return $alerts;
 	}
 }
 new Mpc_Core();
