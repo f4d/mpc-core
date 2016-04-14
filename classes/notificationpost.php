@@ -68,7 +68,11 @@ class NotificationPost {
 	* @param int $post_id Post ID
 	*/
 	function save_meta_boxes( $post_id ) {
-	  // Check this is the Notification Custom Post Type
+      // Check this is the Notification Custom Post Type
+      if ( 'notification' == $_GET['post_type']) {
+        return $post_id;
+      }
+      // Check this is the Notification Custom Post Type
 	  if ( 'notification' != $_POST['post_type']) {
 	    return $post_id;
 	  }
