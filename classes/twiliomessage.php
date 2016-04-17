@@ -3,7 +3,7 @@ class TwilioMessage {
 	public $to, $msg, $callbackUrl, $result;
 	public function __construct($to,$msg,$dataObj) {
 		$this->result = 0;
-		$this->to = $to;
+		$this->to = PhoneNumber::cleanup($to);
 		$this->msg = $msg;
 		$this->callbackUrl = TwilioHelper::prepUrl('/wp-json/petguardian/v1/twilio-response');
 		$this->dataObj = $dataObj;
@@ -17,8 +17,8 @@ class TwilioMessage {
 			  $this->result = 1;
 			} catch (Exception $e) {
 				//mark number as bad, update user meta, send emails
-				//print_r($e);
-				$this->badNumber();
+				$error = $e->getMessage();
+				if(strpos($error,'not a valid phone number')>0) {$this->badNumber();}
 				$this->result = -1;
 			}
 		}
@@ -27,9 +27,10 @@ class TwilioMessage {
 		//PhoneNumber::updateNumberHealth($phoneNumber->number,'failed'); 
 		//echo "bad number!";
 		if((is_a($this->dataObj, 'Guardian'))) {
-			//echo 'bad Guardian! number...';
+			echo 'bad Guardian! number...';
 			$guardian = $this->dataObj;
 			$owner = new PetOwner($guardian->petId);
+			print_r($owner);
 			UserHelper::updateGuardianNumber($owner->user->ID,$guardian->petNum,$guardian->guardNum,'___');
 		}
 		//mail ( 'admin@petguardianinc.com' , 'Bad Number: Pet Guardian' , $e->getMessage() );
@@ -44,4 +45,38 @@ class TwilioMessage {
 		}
 		return (object) ['attempted'=>$attempted,'failed'=>$failed];
 	}
+	static public function alertGuardians($owner,$templateId) {
+		$n = new Notification($owner);
+		$post = Notification::filterPost();
+		$guardians = $owner->getValidGuardians();
+		$post = Notification::filterPost();
+		$sent = [];
+		foreach ($guardians as $guardian) {
+
+			$template = Notification::getTemplate($templateId);
+			$msg = $n->parseGuardianTemplate($template,$post,$guardian);
+			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);
+			$message->send();
+			$sent[] = $message;
+		}
+		$results = TwilioMessage::msgResults($sent);
+		$msg = "We are attempting to send ".$results->attempted." messages to Pet Guardians. ";
+		$msg .= "Warning: We were unable to send ".$results->failed." messages to Pet Guardians. ";
+		return $msg;
+	}
+	static public function alertPrimary($owner,$templateId) {
+		$n = new Notification($owner);
+		$post = Notification::filterPost();
+
+		$template = Notification::getTemplate($templateId);
+		$msg = $n->parseOwnerTemplate($template,$post);
+		$message = new TwilioMessage($owner->phone,$msg,$owner);
+		$message->send();
+		if($message->result === -1) {
+			$msg = "Warning: We were unable to send a message to the primary pet owner. ";
+		} else {
+			$msg = "Message sent to the primary pet owner. ";
+		}
+		return $msg;
+	}	
 }

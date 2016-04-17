@@ -4,27 +4,33 @@ class TwilioMessageTest extends Microtest {
 		$this->log("TwilioMessageTest setup.");
 		$this->add('msgValidGuardians');
 		$this->add('msgPrimary');
+		$this->add('firstResponder');
 	}
 	protected function cleanup() {
 		$this->log("TwilioMessageTest cleanup.");
-		$owner = new PetOwner('cyborgk@gmail.com');
-		UserHelper::updateGuardianNumber($owner->user->ID,1,3,'(555)555-5555');
+		$owner = new PetOwner('cyborgk@gmail.com');		
+		//UserHelper::markGuardianAccepted($owner->user->ID,2,1);
+		UserHelper::updateGuardianNumber($owner->user->ID,2,1,'(555)555-5555');
+		UserHelper::updateGuardianNumber($owner->user->ID,3,1,'(773)609-2730');
+	}
+	public function updateGuardianAccepted($userId,$petNum,$guardianNum) {
+		$key = UserHelper::guardianResponseKey($petNum,$guardianNum);
+		update_user_meta( $userId, $key, 1 );
 	}
 	public function msgValidGuardians() {
 		$this->log("msgValidGuardians test.");
-		$owner = new PetOwner('info@rezon8.net');
+		$owner = new PetOwner('cyborgk@gmail.com');
 		$n = new Notification($owner);
 		$guardians = $owner->getValidGuardians();
 		print_r($guardians);
 		$post = Notification::filterPost();
 		$sent = [];
 		foreach ($guardians as $guardian) {
-			echo "Guardian #:";
-			echo $guardian->mobile_phone."<br>";
-			if ($_SERVER['SERVER_NAME']==="localhost") {$templateId = '7';}
-			else {$templateId = '1974'; }
-			echo "Template ID: $templateId<br>";
-			$template = Notification::getTemplate($templateId);
+			//echo "Guardian #:";
+			//echo $guardian->mobile_phone."<br>";
+			//echo $guardian->response."<br>";
+			//echo "Template ID: $templateId<br>";
+			$template = Notification::getTemplate(Mpc_Core::getFirstResponderGuardianTemplate());
 			$msg = $n->parseGuardianTemplate($template,$post,$guardian);
 			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);
 			$message->send();
@@ -32,25 +38,23 @@ class TwilioMessageTest extends Microtest {
 		}
 		$results = TwilioMessage::msgResults($sent);
 		echo "<br><br>";
-		$owner = new PetOwner('info@rezon8.net');
+		$owner = new PetOwner('cyborgk@gmail.com');
 		$guardians = $owner->getValidGuardians();
-		/*echo "<br>";
+		echo "<br>";
 		foreach($guardians as $guardian) {
 			echo "Guardian #:";
 			echo $guardian->mobile_phone."<br>";
-		}*/
-		print_r($results);
+		}
+		//print_r($results);
 		echo "<br>";
 		return ($results->attempted === 2);
 	}
 	public function msgPrimary() {
 		$this->log("msgPrimary test.");
-		$owner = new PetOwner('info@rezon8.net');
+		$owner = new PetOwner('cyborgk@gmail.com');
 		$n = new Notification($owner);
 		$post = Notification::filterPost();
-		if ($_SERVER['SERVER_NAME']==="localhost") {$templateId = '8';}
-		else {$templateId = '1973'; }
-		$template = Notification::getTemplate($templateId);
+		$template = Notification::getTemplate(Mpc_Core::getFirstResponderOwnerTemplate());
 		$msg = $n->parseOwnerTemplate($template,$post);
 		$message = new TwilioMessage($owner->phone,$msg,$owner);
 		$message->send();
@@ -59,8 +63,14 @@ class TwilioMessageTest extends Microtest {
 		} else {
 			$msg = "Message sent to the primary pet owner. ";
 		}
-				return ($msg === "Message sent to the primary pet owner. ");
-
-
+		return ($msg === "Message sent to the primary pet owner. ");
+	}
+	public function firstResponder() {
+		$this->log("firstResponder test.");
+		$owner = new PetOwner('cyborgk@gmail.com');
+		$confirmation = TwilioMessage::alertPrimary($owner,Mpc_Core::getFirstResponderOwnerTemplate());
+		$confirmation .= TwilioMessage::alertGuardians($owner,Mpc_Core::getFirstResponderGuardianTemplate());
+		$this->log('Confirmation:'.$confirmation);
+		return false;
 	}
 }

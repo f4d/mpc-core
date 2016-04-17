@@ -58,15 +58,15 @@ class PetOwnerTest extends Microtest {
 		$this->log("PetOwnerTest testGetAllGuardians.");		
 		$owner = new PetOwner('cyborgk@gmail.com');
 		$g = $owner->getAllGuardians();
-		$this->log("Number of guardians for adminpowers: ".count($g));
-		return (count($g) === 7);
+		$this->log("Number of guardians for cyborgk@gmail.com: ".count($g));
+		return (count($g) === 3);
 	}	
 	public function testGetValidGuardians() {
 		//user id 92
 		$this->log("PetOwnerTest testGetAllGuardians.");		
 		$owner = new PetOwner('cyborgk@gmail.com');
 		$g = $owner->getValidGuardians();
-		$this->log("Number of valid guardians for adminpowers: ".count($g));
-		return (count($g) === 4);
+		$this->log("Number of valid guardians for cyborgk@gmail.com: ".count($g));
+		return (count($g) === 3);
 	}		
 }
