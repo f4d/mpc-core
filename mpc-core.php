@@ -43,7 +43,6 @@ class Mpc_Core {
 		$firstRespString = "gform_pre_submission_{$firstRespFormId}";
 		$filterStr = "gform_confirmation_{$firstRespFormId}";
 		$this->add_action( $firstRespString, 'filterFirstResponder' );
-		$filterStr = "gform_confirmation_{$firstRespFormId}";
 		$this->add_action( $filterStr, 'filterConfirmation', 3 );
 
 		add_action( 'rest_api_init', function () {
