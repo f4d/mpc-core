@@ -46,16 +46,39 @@ class Mpc_Core {
 		$this->add_action( $filterStr, 'filterConfirmation', 3 );
 
 		add_action( 'rest_api_init', function () {
-		    register_rest_route( 'petguardian/v1', '/twilio-response', array(
-		        'methods' => 'POST',
+		  register_rest_route( 'petguardian/v1', '/twilio-response', array(
+		        'methods' => 'GET',
 		        'callback' => array('PhoneNumber','smsCallback')
-		    ) );
+		  ));
+		  //http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/ivr-notification?msg_id=9647665452
+			Mpc_Core::registerUrl('/ivr-notification','GET',array($this,'ivrNotification'));
+			Mpc_Core::registerUrl('/sms-notification','GET',[$this,'smsNotification']);
 		} );		
 	}
+
 	public function filterConfirmation($confirmation,$form,$entry) {
 		$confirmation = $entry['12'];
 		return $confirmation;
 	}
+	public function ivrNotification() {
+		$this->phoneSysNotification();
+	}
+	public function smsNotification() {
+		$this->phoneSysNotification();
+	}
+	public function phoneSysNotification() {
+		$owner = new PetOwner($_GET['lookup']);
+		//if user valid
+		if($owner->user===false) {
+			//log "Invalid Pet Owner ID submitted.";
+		} else {
+			$confirmation = TwilioMessage::alertPrimary($owner,Mpc_Core::getFirstResponderOwnerTemplate());
+			$confirmation .= TwilioMessage::alertGuardians($owner,Mpc_Core::getFirstResponderGuardianTemplate());
+			//log Confirmation::createConfirmation($confirmation);
+			echo $confirmation;
+		}
+	}
+
 	public function filterFirstResponder($form) {
 		$owner = new PetOwner($_POST['input_11']);
 		//if user not valid
@@ -81,10 +104,17 @@ class Mpc_Core {
 		exit();
 	}
 
+	public function registerUrl($url,$method,$callbackUrl) {
+		register_rest_route( 'petguardian/v1', $url, array(
+			'methods' => $method,
+			'callback' => $callbackUrl
+		));
+	}
 
 	private function invalidUser() {
 		return 0;
 	}	
+
 	static public function getFirstResponderGuardianTemplate() {
 		if ($_SERVER['SERVER_NAME']==="localhost") {return '7';}
 		else {return '1977'; }

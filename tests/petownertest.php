@@ -34,7 +34,7 @@ class PetOwnerTest extends Microtest {
 		$owner = new PetOwner('1274276602');
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user !== false);
-	}	
+	}
 	public function testInvalidPet() {
 		$this->log("PetOwnerTest testInvalidPetId.");		
 		// 1274276602 example pet ID
@@ -59,7 +59,7 @@ class PetOwnerTest extends Microtest {
 		$owner = new PetOwner('cyborgk@gmail.com');
 		$g = $owner->getAllGuardians();
 		$this->log("Number of guardians for cyborgk@gmail.com: ".count($g));
-		return (count($g) === 3);
+		return (count($g) === 5);
 	}	
 	public function testGetValidGuardians() {
 		//user id 92
@@ -67,6 +67,6 @@ class PetOwnerTest extends Microtest {
 		$owner = new PetOwner('cyborgk@gmail.com');
 		$g = $owner->getValidGuardians();
 		$this->log("Number of valid guardians for cyborgk@gmail.com: ".count($g));
-		return (count($g) === 3);
-	}		
+		return (count($g) === 5);
+	}
 }
