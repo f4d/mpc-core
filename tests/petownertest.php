@@ -43,6 +43,7 @@ class PetOwnerTest extends Microtest {
 		return ($owner->user === false);
 	}
 	public function testValidEmail() {
+		//cyborgk@gmail.com pet owner ID 9342390942
 		$this->log("PetOwnerTest testValidOwnerEmail.");		
 		$owner = new PetOwner('cyborgk@gmail.com');
 		$this->log("Number of pets: ".$owner->numOfPets);

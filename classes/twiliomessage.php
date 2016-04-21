@@ -45,7 +45,7 @@ class TwilioMessage {
 		}
 		return (object) ['attempted'=>$attempted,'failed'=>$failed];
 	}
-	static public function alertGuardians($owner,$templateId) {
+	static public function alertGuardians($owner,$templateId,$from='') {
 		$n = new Notification($owner);
 		$post = Notification::filterPost();
 		$guardians = $owner->getValidGuardians();
@@ -54,7 +54,7 @@ class TwilioMessage {
 		foreach ($guardians as $guardian) {
 
 			$template = Notification::getTemplate($templateId);
-			$msg = $n->parseGuardianTemplate($template,$post,$guardian);
+			$msg = $n->parseGuardianTemplate($template,$post,$guardian,$from);
 			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);
 			$message->send();
 			$sent[] = $message;
@@ -64,12 +64,12 @@ class TwilioMessage {
 		$msg .= "Warning: We were unable to send ".$results->failed." messages to Pet Guardians. ";
 		return $msg;
 	}
-	static public function alertPrimary($owner,$templateId) {
+	static public function alertPrimary($owner,$templateId,$from='') {
 		$n = new Notification($owner);
 		$post = Notification::filterPost();
 
 		$template = Notification::getTemplate($templateId);
-		$msg = $n->parseOwnerTemplate($template,$post);
+		$msg = $n->parseOwnerTemplate($template,$post,$from);
 		$message = new TwilioMessage($owner->phone,$msg,$owner);
 		$message->send();
 		if($message->result === -1) {
