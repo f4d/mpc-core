@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // exit if accessed directly!
 }
 
+require_once('mpc-config.php');
 require_once('vendor/autoload.php');
 require_once('classes/autoload.php');
 
@@ -31,20 +32,27 @@ class Mpc_Core {
 	public function __construct() {
 		//run code for custom post type - NotificationPost
 		$np = new NotificationPost();
+		$this->setupTestForm();
+		$this->setupFirstResponderForm();
+		$this->setupRestUrls();	
+	}
+	public function setupTestForm() {
 		//test code
 		if ($_SERVER['SERVER_NAME']==="localhost") {$formId = '1';}
-		else {$formId = '69'; }
+		else {$formId = Mpc_Config::TEST_FORM_ID; }
 		$gformStr = "gform_pre_submission_{$formId}";
-		$this->add_action( $gformStr, 'runTests' );
-
-		//$phoneFormId = '68';
+		$this->add_action( $gformStr, 'runTests' );		
+	}
+	public function setupFirstResponderForm() {
 		//first responder code
-		$firstRespFormId = '62';
+		$firstRespFormId = Mpc_Config::FR_FORM_ID; 
 		$firstRespString = "gform_pre_submission_{$firstRespFormId}";
 		$filterStr = "gform_confirmation_{$firstRespFormId}";
 		$this->add_action( $firstRespString, 'filterFirstResponder' );
 		$this->add_action( $filterStr, 'filterConfirmation', 3 );
 
+	}
+	public function setupRestUrls() {
 		add_action( 'rest_api_init', function () {
 		  register_rest_route( 'petguardian/v1', '/twilio-response', array(
 		        'methods' => 'GET',
@@ -53,11 +61,10 @@ class Mpc_Core {
 		  //http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/ivr-notification?msg_id=9647665452
 			Mpc_Core::registerUrl('/ivr-notification','GET',array($this,'ivrNotification'));
 			Mpc_Core::registerUrl('/sms-notification','GET',[$this,'smsNotification']);
-		} );		
+		} );			
 	}
-
 	public function filterConfirmation($confirmation,$form,$entry) {
-		$confirmation = $entry['12'];
+		$confirmation = $entry[Mpc_Config::FR_FORM_CONFIRMATION_FIELD_ID];
 		return $confirmation;
 	}
 	public function ivrNotification() {
@@ -73,15 +80,15 @@ class Mpc_Core {
 		if($owner->user===false) {
 			//log "Invalid Pet Owner ID submitted.";
 		} else {
-			$confirmation = TwilioMessage::alertPrimary($owner,Mpc_Core::getFirstResponderOwnerTemplate(),$from);
-			$confirmation .= TwilioMessage::alertGuardians($owner,Mpc_Core::getFirstResponderGuardianTemplate(),$from);
+			$confirmation = TwilioMessage::alertPrimary($owner,1980,$from);
+			$confirmation .= TwilioMessage::alertGuardians($owner,1980,$from);
 			//log Confirmation::createConfirmation($confirmation);
 			echo $confirmation;
 		}
 	}
 
 	public function filterFirstResponder($form) {
-		$owner = new PetOwner($_POST['input_11']);
+		$owner = new PetOwner($this->getPetOwnerId(Mpc_Config::FR_FORM_OWNER_FIELD_ID));
 		//if user not valid
 		if($owner->user===false) {
 			Confirmation::createConfirmation("Invalid Pet Owner ID submitted. No alerts have been sent, please verify the pet owner ID number and try again.");
@@ -101,6 +108,7 @@ class Mpc_Core {
 		$test = new NotificationTest();
 		echo $test->log;		
 		$test = new TwilioMessageTest();
+
 		echo $test->log;		
 		exit();
 	}
@@ -112,17 +120,23 @@ class Mpc_Core {
 		));
 	}
 
-	private function invalidUser() {
+
+	public function getPetOwnerId($fieldId) {
+		$key = 'input_'.$fieldId;
+		return rgar($_POST,$key);
+
+	}
+	public function invalidUser() {
 		return 0;
 	}	
-
-	static public function getFirstResponderGuardianTemplate() {
-		if ($_SERVER['SERVER_NAME']==="localhost") {return '7';}
-		else {return '1977'; }
-	}
 	static public function getFirstResponderOwnerTemplate() {
 		if ($_SERVER['SERVER_NAME']==="localhost") {return '8';}
-		else {return '1976'; }
+		else {return Mpc_Config::FR_FORM_OWNER_NOTIFICATION_ID;; } 
 	}
+	static public function getFirstResponderGuardianTemplate() {
+		if ($_SERVER['SERVER_NAME']==="localhost") {return '7';}
+		else {return Mpc_Config::FR_FORM_GUARD_NOTIFICATION_ID; } 
+	}
+
 }
 new Mpc_Core();

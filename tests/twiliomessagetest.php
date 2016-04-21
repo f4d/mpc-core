@@ -1,5 +1,6 @@
 <?php
 class TwilioMessageTest extends Microtest {
+	public $core;
 	protected function setup() {
 		$this->log("TwilioMessageTest setup.");
 		$this->add('msgValidGuardians');
