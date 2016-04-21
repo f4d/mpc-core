@@ -52,7 +52,6 @@ class TwilioMessage {
 		$post = Notification::filterPost();
 		$sent = [];
 		foreach ($guardians as $guardian) {
-
 			$template = Notification::getTemplate($templateId);
 			$msg = $n->parseGuardianTemplate($template,$post,$guardian,$from);
 			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);
