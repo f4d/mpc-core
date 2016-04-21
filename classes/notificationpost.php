@@ -26,13 +26,24 @@ class NotificationPost {
             'not_found'          => __( 'No notification found.', 'mpc-core' ),
             'not_found_in_trash' => __( 'No notification found in Trash.', 'mpc-core' ),
         ),
-         
+
         // Frontend
         'has_archive'        => false,
         'public'             => false,
         'publicly_queryable' => false,
          
         // Admin
+        'capabilities' => array(
+            'edit_post'          => 'update_core',
+            'read_post'          => 'update_core',
+            'delete_post'        => 'update_core',
+            'edit_posts'         => 'update_core',
+            'edit_others_posts'  => 'update_core',
+            'delete_posts'       => 'update_core',
+            'publish_posts'      => 'update_core',
+            'read_private_posts' => 'update_core'
+        ),
+
         'capability_type' => 'post',
         'menu_icon'     => 'dashicons-businessman',
         'menu_position' => 10,
@@ -41,8 +52,7 @@ class NotificationPost {
         'show_ui'       => true,
         'supports'      => array(
             'title',
-            'author',
-            'comments', 
+            'author'
         ),
     ) );    
 	}	
@@ -56,7 +66,11 @@ class NotificationPost {
     	'notification', 'normal', 'high' );   
 	}
 	function output_meta_box($post) {
-		$notification_text = esc_attr(get_post_meta( $post->ID, '_notification_text', true ));
+	$notification_text = esc_attr(get_post_meta( $post->ID, '_notification_text', true ));
+    
+    // Add a nonce field so we can check for it later.
+    wp_nonce_field( 'save_notification', 'notification_nonce' );
+
     // Output label and field
     $str = '<label for="notification_text">' . __( 'Notification Text', 'mpc-core' ) . '</label><br>';
     $str .= '<textarea name="notification_text" id="notification_text" rows="6" cols="60">';
@@ -68,6 +82,16 @@ class NotificationPost {
 	* @param int $post_id Post ID
 	*/
 	function save_meta_boxes( $post_id ) {
+        // Check if our nonce is set.
+        if ( ! isset( $_POST['notification_nonce'] ) ) {
+            return $post_id;    
+        }
+
+        // Verify that the nonce is valid.
+        if ( ! wp_verify_nonce( $_POST['notification_nonce'], 'save_notification' ) ) {
+            return $post_id;
+        }
+
       // Check this is the Notification Custom Post Type
       if ( 'notification' == $_GET['post_type']) {
         return $post_id;
