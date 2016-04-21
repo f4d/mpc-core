@@ -27,10 +27,9 @@ class TwilioMessage {
 		//PhoneNumber::updateNumberHealth($phoneNumber->number,'failed'); 
 		//echo "bad number!";
 		if((is_a($this->dataObj, 'Guardian'))) {
-			echo 'bad Guardian! number...';
+			//echo 'bad Guardian! number...';
 			$guardian = $this->dataObj;
 			$owner = new PetOwner($guardian->petId);
-			print_r($owner);
 			UserHelper::updateGuardianNumber($owner->user->ID,$guardian->petNum,$guardian->guardNum,'___');
 		}
 		//mail ( 'admin@petguardianinc.com' , 'Bad Number: Pet Guardian' , $e->getMessage() );
