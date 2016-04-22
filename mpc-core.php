@@ -29,13 +29,46 @@ require_once('tests/notificationtest.php');
 require_once('tests/twiliomessagetest.php');
 
 class Mpc_Core {
+	public $genericNotifyForms;
+
 	public function __construct() {
+		$this->genericNotifyForms = [];
 		//run code for custom post type - NotificationPost
 		$np = new NotificationPost();
 		$this->setupTestForm();
 		$this->setupFirstResponderForm();
 		$this->setupRestUrls();	
+		$this->addGenericGuardianForms();
+		$this->setupGenericGuardianForms();
 	}
+	public function addGenericGuardianForms() {
+		//$formId,$ownerFieldId,$confirmationFieldId,$notificationTemplate
+		$this->addGenericForm('66','12','10','1985');
+	}
+
+
+	public function addGenericForm($formId,$ownerFieldId,$confirmationFieldId,$notificationTemplate) {
+		$gfn = new GenericFormNotification($formId,$ownerFieldId,$confirmationFieldId,$notificationTemplate);
+		$this->genericNotifyForms[] = $gfn;
+	}
+	public function setupGenericGuardianForms() {
+		foreach ($this->genericNotifyForms as $form) {
+			$formfilterStr = "gform_pre_submission_{$form->formId}";
+			$this->add_action( $formfilterStr, 'filterGenericNotificationForm' );
+			$filterStr = "gform_confirmation_{$form->formId}";
+			$this->add_action( $filterStr, 'filterGenericNotificationConfirmation', 3 );
+		}
+	}
+	public function filterGenericNotificationForm($form) {
+		$form = $this->genericNotifyForms[0];
+		$this->genericGuardianNotifications($form->ownerFieldId,$form->confirmationFieldId,$form->notificationTemplate);
+	}
+	public function filterGenericNotificationConfirmation($confirmation,$form,$entry) {
+		$form = $this->genericNotifyForms[0];
+		$confirmation = $entry[$form->confirmationFieldId];
+		return $confirmation;
+	}
+
 	public function setupTestForm() {
 		//test code
 		if ($_SERVER['SERVER_NAME']==="localhost") {$formId = '1';}
@@ -50,7 +83,6 @@ class Mpc_Core {
 		$filterStr = "gform_confirmation_{$firstRespFormId}";
 		$this->add_action( $firstRespString, 'filterFirstResponder' );
 		$this->add_action( $filterStr, 'filterConfirmation', 3 );
-
 	}
 	public function setupRestUrls() {
 		//Set the phone number log update
@@ -87,7 +119,24 @@ class Mpc_Core {
 			}
 			Confirmation::createConfirmation($confirmation);
 		}
-	}	
+	}
+	public function genericGuardianNotifications($ownerFieldId,$confirmationFieldId,$notificationTemplate) {
+		$id = $this->getPetOrOwnerId($ownerFieldId);
+		$owner = new PetOwner($id);
+		$confirmation = '';
+		//if user not valid
+		if($owner->user===false) {
+			$confirmation .= "Invalid Pet Owner ID submitted. No alerts have been sent, please verify the pet owner ID number and try again.";
+		} else {
+			if (PetOwner::isValidPetId($id)) {
+				$petNum = substr($id , 0, 1);
+				$confirmation .= TwilioMessage::alertGuardiansForPet($owner,$petNum,$notificationTemplate);
+			} else {
+				$confirmation .= TwilioMessage::alertGuardians($owner,$notificationTemplate);
+			}
+		}
+		Confirmation::createGenericConfirmation($confirmation,$confirmationFieldId);
+	}		
 	public function ivrNotification() {
 		$this->phoneSysNotification(Mpc_Config::FR_IVR_OWNER_NOTIFICATION_ID,
 			Mpc_Config::FR_IVR_GUARD_NOTIFICATION_ID);
