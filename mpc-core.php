@@ -20,6 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once('mpc-config.php');
+require_once('mpc-admin.php');
 require_once('vendor/autoload.php');
 require_once('classes/autoload.php');
 
