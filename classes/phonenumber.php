@@ -89,6 +89,7 @@ class PhoneNumber {
 		$search_criteria = array();
 		$search_criteria['field_filters'][] = array( 'key' => PhoneNumber::PHONE_FIELD, 'value' => $number );
 		$entries = GFAPI::get_entries( PhoneNumber::FORM_ID, $search_criteria );
+		//print_r($entries);
 		if( count($entries) > 0 ) {
 			if($last) {
 				return $entries[0];
@@ -102,6 +103,7 @@ class PhoneNumber {
 	public static function updateNumberHealth($number,$callStatus) {
 		if ($callStatus == 'sent' || $callStatus == 'failed' || $callStatus == 'undelivered' || $callStatus == 'delivered' && $number != "_____") {
 			$p = PhoneNumber::gfFindNumber($number,true);
+			//print_r($p);
 			$phoneNumber = new PhoneNumber($number,$p[PhoneNumber::HEALTH_FIELD],$p[PhoneNumber::USER_ID_FIELD]);
 			$phoneNumber->setHealth($callStatus);
 
@@ -122,6 +124,7 @@ class PhoneNumber {
 		if (array_key_exists('To', $_POST) && array_key_exists('SmsStatus', $_POST) ) {
 			//TwilioHelper::sendMsg($_POST['SmsStatus'],'7736092730');
 			$number = PhoneNumber::stripPrefix($_POST['To']);
+			print_r($number);
 			$status = $_POST['SmsStatus'];
 			return PhoneNumber::updateNumberHealth($number,$status);
 		} else {

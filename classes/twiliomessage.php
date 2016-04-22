@@ -9,7 +9,9 @@ class TwilioMessage {
 		$this->dataObj = $dataObj;
 	}	
 	public function send() {
-		if (PhoneNumber::invalid($this->to)) {
+		$phoneNumber = PhoneNumber::lookup($this->to);
+		//SKIP BAD NUMBERS
+		if (PhoneNumber::invalid($this->to) || $phoneNumber->health == "bad") {
 			$this->result = -1;
 		} else {
 			try {
@@ -54,6 +56,7 @@ class TwilioMessage {
 			$template = Notification::getTemplate($templateId);
 			$msg = $n->parseGuardianTemplate($template,$post,$guardian,$from);
 			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);
+			print_r($message);
 			$message->send();
 			$sent[] = $message;
 		}
@@ -77,4 +80,24 @@ class TwilioMessage {
 		}
 		return $msg;
 	}	
+	static public function alertGuardiansForPet($owner,$petNum,$templateId,$from='') {
+		$n = new Notification($owner);
+		$post = Notification::filterPost();
+		$guardians = $owner->getValidPetGuardians($petNum);
+		$post = Notification::filterPost();
+		$sent = [];
+		foreach ($guardians as $guardian) {
+			$template = Notification::getTemplate($templateId);
+			$msg = $n->parseGuardianTemplate($template,$post,$guardian,$from);
+			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);
+			$message->send();
+			$sent[] = $message;
+		}
+		$results = TwilioMessage::msgResults($sent);
+		$msg = "We are attempting to send ".$results->attempted." messages to Pet Guardians. ";
+		if ($results->failed > 0) {
+			$msg .= "Warning: We were unable to send ".$results->failed." messages to Pet Guardians. ";
+		}
+		return $msg;
+	}
 }

@@ -6,10 +6,12 @@ class PetOwnerTest extends Microtest {
 		$this->add('testInvalidOwner');
 		$this->add('testValidPet');
 		$this->add('testInvalidPet');
+		$this->add('testForValidPetIds');
 		$this->add('testValidEmail');
 		$this->add('testInvalidEmail');		
 		$this->add('testGetAllGuardians');		
 		$this->add('testGetValidGuardians');		
+		$this->add('testGetValidGuardiansForPet');		
 	}
 	protected function cleanup() {
 		$this->log("PetOwnerTest cleanup.");
@@ -42,6 +44,20 @@ class PetOwnerTest extends Microtest {
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user === false);
 	}
+	public function testForValidPetIds() {
+		$this->log("PetOwnerTest testForValidPetIds.");		
+		$id1 = "0000000000";
+		$id2 = "9876543210";
+		$id3 = "1223456123";
+		$id4 = "5000000000";
+		$test1 = PetOwner::isValidPetId($id1);
+		$test2 = PetOwner::isValidPetId($id2);
+		$test3 = PetOwner::isValidPetId($id3);
+		$test4 = PetOwner::isValidPetId($id4);
+		$result = ($test1 === false && $test2 ===false && $test3===true && $test4===true);
+		$this->log("TestForValidPetIds result:".$result);
+		return $result;
+	}
 	public function testValidEmail() {
 		//cyborgk@gmail.com pet owner ID 9342390942
 		$this->log("PetOwnerTest testValidOwnerEmail.");		
@@ -70,4 +86,13 @@ class PetOwnerTest extends Microtest {
 		$this->log("Number of valid guardians for cyborgk@gmail.com: ".count($g));
 		return (count($g) === 5);
 	}
+	public function testGetValidGuardiansForPet() {
+		//user id 92
+		$this->log("PetOwnerTest testGetValidGuardiansForPet.");		
+		$owner = new PetOwner('cyborgk@gmail.com');
+		$g = $owner->getValidPetGuardians(1);
+		print_r($g);
+		$this->log("Number of valid guardians for pet 1, cyborgk@gmail.com: ".count($g));
+		return (count($g) === 3);
+	}	
 }

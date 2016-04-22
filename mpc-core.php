@@ -53,12 +53,16 @@ class Mpc_Core {
 
 	}
 	public function setupRestUrls() {
+		//Set the phone number log update
+		//view phone log @ http://petguardian.staging.wpengine.com/wp-admin/admin.php?page=gf_entries&id=68
+		//http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/twilio-response
 		add_action( 'rest_api_init', function () {
 		  register_rest_route( 'petguardian/v1', '/twilio-response', array(
-		        'methods' => 'GET',
+		        'methods' => 'POST',
 		        'callback' => array('PhoneNumber','smsCallback')
 		  ));
-		  //http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/ivr-notification?msg_id=9647665452
+		  //http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/ivr-notification?lookup=9647665452
+		  //http://petguardian.staging.wpengine.com/wp-json/petguardian/v1/sms-notification?lookup=1150860946&from=17736092730
 			Mpc_Core::registerUrl('/ivr-notification','GET',array($this,'ivrNotification'));
 			Mpc_Core::registerUrl('/sms-notification','GET',[$this,'smsNotification']);
 		} );			
@@ -67,38 +71,50 @@ class Mpc_Core {
 		$confirmation = $entry[Mpc_Config::FR_FORM_CONFIRMATION_FIELD_ID];
 		return $confirmation;
 	}
-	public function ivrNotification() {
-		$this->phoneSysNotification();
-	}
-	public function smsNotification() {
-		$this->phoneSysNotification();
-	}
-	public function phoneSysNotification() {
-		$owner = new PetOwner($_GET['lookup']);
-		$from = $_GET['from'];
-		//if user valid
-		if($owner->user===false) {
-			//log "Invalid Pet Owner ID submitted.";
-		} else {
-			$confirmation = TwilioMessage::alertPrimary($owner,1980,$from);
-			$confirmation .= TwilioMessage::alertGuardians($owner,1980,$from);
-			//log Confirmation::createConfirmation($confirmation);
-			echo $confirmation;
-		}
-	}
-
 	public function filterFirstResponder($form) {
-		$owner = new PetOwner($this->getPetOwnerId(Mpc_Config::FR_FORM_OWNER_FIELD_ID));
+		$id = $this->getPetOrOwnerId(Mpc_Config::FR_FORM_OWNER_FIELD_ID);
+		$owner = new PetOwner($id);
 		//if user not valid
 		if($owner->user===false) {
 			Confirmation::createConfirmation("Invalid Pet Owner ID submitted. No alerts have been sent, please verify the pet owner ID number and try again.");
 		} else {
 			$confirmation = TwilioMessage::alertPrimary($owner,Mpc_Core::getFirstResponderOwnerTemplate());
-			$confirmation .= TwilioMessage::alertGuardians($owner,Mpc_Core::getFirstResponderGuardianTemplate());
+			if (PetOwner::isValidPetId($id)) {
+				$petNum = substr($id , 0, 1);
+				$confirmation .= TwilioMessage::alertGuardiansForPet($owner,$petNum,Mpc_Core::getFirstResponderGuardianTemplate());
+			} else {
+				$confirmation .= TwilioMessage::alertGuardians($owner,Mpc_Core::getFirstResponderGuardianTemplate());
+			}
 			Confirmation::createConfirmation($confirmation);
 		}
 	}	
-
+	public function ivrNotification() {
+		$this->phoneSysNotification(Mpc_Config::FR_IVR_OWNER_NOTIFICATION_ID,
+			Mpc_Config::FR_IVR_GUARD_NOTIFICATION_ID);
+	}
+	public function smsNotification() {
+		$this->phoneSysNotification(Mpc_Config::FR_SMS_OWNER_NOTIFICATION_ID,
+			Mpc_Config::FR_SMS_GUARD_NOTIFICATION_ID);
+	}
+	public function phoneSysNotification($ownerId,$guardianId) {
+		$lookup = $_GET['lookup'];
+		$owner = new PetOwner($lookup);
+		$from = $_GET['from'];
+		//if user valid
+		if($owner->user===false) {
+			//log "Invalid Pet Owner ID submitted.";
+		} else {
+			$confirmation = TwilioMessage::alertPrimary($owner,$ownerId,$from);
+			if (PetOwner::isValidPetId($lookup)) {
+				$petNum = substr($lookup , 0, 1);
+				$confirmation .= TwilioMessage::alertGuardiansForPet($owner,$petNum,$guardianId,$from);
+			} else {
+				$confirmation .= TwilioMessage::alertGuardians($owner,$guardianId,$from);
+			}
+			//log Confirmation::createConfirmation($confirmation);
+			echo $confirmation;
+		}
+	}
 	public function add_action($action,$method, $args=1) {
 		add_action( $action, [$this, $method], 100, $args );
 	}
@@ -121,7 +137,7 @@ class Mpc_Core {
 	}
 
 
-	public function getPetOwnerId($fieldId) {
+	public function getPetOrOwnerId($fieldId) {
 		$key = 'input_'.$fieldId;
 		return rgar($_POST,$key);
 

@@ -11,7 +11,7 @@ class PetOwner {
 		if (preg_match("/9\d{9}/",$key)===1) {
 			$this->user = PetOwner::find($key);
 		// 1274276602 example pet ID
-		} elseif (preg_match("/\d{10}/",$key)===1) {
+		} elseif (PetOwner::isValidPetId($key)) {
 			$this->user = PetOwner::findByPetId($key);
 		} else {
 			$this->user = PetOwner::findByEmail($key);
@@ -53,6 +53,16 @@ class PetOwner {
 		}
 		return $g;
 	}
+	public function getValidPetGuardians($petNum) {
+		$g = [];
+		$all = $this->pets[$petNum]->guardians;
+		foreach ($all as $guardian) {
+			if($guardian->response==="1") {
+				$g[] = $guardian;
+			}
+		}
+		return $g;
+	}
 	public static function getMetaVal($data,$key) {
 		$q = rgar($data, $key);
 		return rgar($q, 0);
@@ -76,7 +86,7 @@ class PetOwner {
 	public static function findByPetId($petId) {
 		$user = false;
 		for($i=1;$i<6;$i++) {
-			if (count(preg_match("/".$i."\d{9}/", $petId)===1)) {
+			if (preg_match("/".$i."\d{9}/", $petId)===1) {
 				$meta_key = "pet_{$i}_id";
 				$query = new WP_User_Query( array( 'meta_key' => $meta_key, 'meta_value' => $petId ) );
 				if (count($query->results) == 1) {
@@ -94,5 +104,14 @@ class PetOwner {
 			$user = $query->results[0];
 		}
 		return $user;
+	}
+	static public function isValidPetId($petId) {
+		//check first digit
+		$first = intval(substr($petId , 0, 1));
+		if (preg_match("/\d{10}/",$petId)===1 && $first > 0 && $first < 6) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
