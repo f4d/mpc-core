@@ -1,6 +1,6 @@
 <?php
 class Pet {
-	const PET_OWNER_FIELD = '204';
+	const PET_ID_FIELD = '147';
 	const PF1_ID = '6';
 	const PF2_ID = '57';
 	const PF3_ID = '58';
@@ -23,8 +23,8 @@ class Pet {
 		//use $this->petNum & $this->petOwnerId, lookup in petfile{n} gravityform
 		$search_criteria = array();
 		$search_criteria['field_filters'][] = array( 
-			'key' => Pet::PET_OWNER_FIELD, 
-			'value' => $this->petOwnerId );
+			'key' => Pet::PET_ID_FIELD, 
+			'value' => $this->petId );
 		$entries = GFAPI::get_entries( $petfileArr[$this->petNum], $search_criteria );
 		$last = array_shift($entries);
 		$callbackUrl = TwilioHelper::prepUrl('/guardian-access-petfile-1/?eid='.$last['id']); 
