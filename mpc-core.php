@@ -43,8 +43,10 @@ class Mpc_Core {
 		$this->setupGenericGuardianForms();
 	}
 	public function addGenericGuardianForms() {
-		//$formId,$ownerFieldId,$confirmationFieldId,$notificationTemplate
+		//$formId,$ownerFieldId,$confirmationFieldId,$guardianNotificationTemplate
 		$this->addGenericForm('66','12','10','1985');
+		//$formId,$ownerFieldId,$confirmationFieldId,$guardianNotificationTemplate,$ownerNotificationTemplate
+		$this->addGenericForm('66','11','12','1978','1976');
 	}
 
 
@@ -121,7 +123,7 @@ class Mpc_Core {
 			Confirmation::createConfirmation($confirmation);
 		}
 	}
-	public function genericGuardianNotifications($ownerFieldId,$confirmationFieldId,$notificationTemplate) {
+	public function genericGuardianNotifications($ownerFieldId,$confirmationFieldId,$notificationTemplate,$ownerNotification="") {
 		$id = $this->getPetOrOwnerId($ownerFieldId);
 		$owner = new PetOwner($id);
 		$confirmation = '';

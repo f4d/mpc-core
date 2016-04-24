@@ -57,8 +57,8 @@ in mpc-core.php, in the main folder of the mpc-core plugin:</p>
 </ul>
 
 <ul>
-<li>	const FR_IVR_OWNER_NOTIFICATION_ID = '1979'; //Notification Post ID, for message sent to owner, from SMS
-<li>	const FR_IVR_GUARD_NOTIFICATION_ID = '1987'; //Notification Post ID, for message sent to guardians, from SMS
+<li>	const FR_SMS_OWNER_NOTIFICATION_ID = '1979'; //Notification Post ID, for message sent to owner, from SMS
+<li>	const FR_SMS_GUARD_NOTIFICATION_ID = '1987'; //Notification Post ID, for message sent to guardians, from SMS
 </ul>
 
 <h4>Test Form Configuration</h4>
@@ -71,8 +71,10 @@ in mpc-core.php, in the main folder of the mpc-core plugin:</p>
 <h4>Adding Additional Guardian Notification Forms</h4>
 <ol>
 <li>Create a new Gravity Form, with a field for PetOwner or Pet ID, and a hidden field for storing confirmations.</li>
-<li>Create a new Notification, with the text you want</li>
+<li>Create a new guardian Notification, with the text you want</li>
+<li>Optionally, create a new owner Notification, with the text you want</li>
 <li>Add a line in mpc-core, to the addGenericGuardianForms() function, like <b>\$this->addGenericForm('66','12','10','1985');</b>, where the 1st var is your form id, 2nd, lookup field id, 3rd, confirmation field id, and 4th, the post id of the new notification.</li>
+<li>*OR: Add a line in mpc-core, to the addGenericGuardianForms() function, like <b>\$this->addGenericForm('66','11','12','1978','1976');</b>, where the 5th var is the (optional) post id of the new owner notification.</li>
 </ol>
 EOT;
 		echo $str;
