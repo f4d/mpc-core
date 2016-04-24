@@ -42,7 +42,8 @@ class Pet {
 		}
 	}
 	private function setGuardian($guardianNum,$data) {
-		$this->guardians[$guardianNum] = new Guardian($data,$this->petId,$this->petNum,$guardianNum,$this->findPetfileUrl());
+		$this->guardians[$guardianNum] = new Guardian($data,$this->petId,$this->petNum,
+			$guardianNum,$this->name,$this->findPetfileUrl());
 	}
 
 	

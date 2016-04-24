@@ -1,10 +1,11 @@
 <?php
 class Guardian {
 	public $prefix, $first_name, $last_name, $email, $mobile_phone, $response;
-	public function __construct( $meta, $petId, $petNum, $guardNum, $petfileUrl = '' ) {
+	public function __construct( $meta, $petId, $petNum, $guardNum, $petname, $petfileUrl = '' ) {
 		$this->petId = $petId;
 		$this->petNum = $petNum;
 		$this->guardNum = $guardNum;
+		$this->petname = $petname;
 		$this->petfileUrl = $petfileUrl;
 		$this->mobile_phone = rgar( $meta, 'mobile_phone' );
 		$this->response = rgar( $meta, 'response' );
@@ -12,6 +13,5 @@ class Guardian {
 		$this->first_name = rgar( $meta, 'first_name' );
 		$this->last_name = rgar( $meta, 'last_name' );
 		$this->email = rgar( $meta, 'email' );
-		$this->pethname = $petNum;
 	}
 }

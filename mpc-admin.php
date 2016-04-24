@@ -29,6 +29,17 @@ class Mpc_Admin {
 	public function plugin_section_text() {
 		$str = <<<EOT
 <h3>Mpc Core Instructions</h3>
+
+<h4>Notification Template Vars</h4>
+<h5>Owner</h5>
+<p>{{owner.firstname}} {{owner.lastname}}</p>
+
+<h5>Guardian</h5>
+<p>{{guardian.prefix}} {{guardian.first_name}} {{guardian.last_name}} {{guardian.email}} {{guardian.mobile_phone}} {{guardian.petId}} {{guardian.petname}} {{guardian.petfileUrl}}</p>
+
+<h5>Form Fields</h5>
+<p>Use the Gravity Form ID: {{post.1}} {{post.2}} etc...</p>
+
 <h4>First Responder Configuration</h4>
 <p>To configure the first responder form settings, adjust the following lines 
 in mpc-core.php, in the main folder of the mpc-core plugin:</p>
@@ -39,7 +50,6 @@ in mpc-core.php, in the main folder of the mpc-core plugin:</p>
 <li>	const FR_FORM_OWNER_NOTIFICATION_ID = '1976'; //Notification Post ID, for message sent to owner
 <li>	const FR_FORM_GUARD_NOTIFICATION_ID = '1977'; //Notification Post ID, for message sent to guardians
 </ul>
-
 
 <ul>
 <li>	const FR_IVR_OWNER_NOTIFICATION_ID = '1979'; //Notification Post ID, for message sent to owner, from IVR
