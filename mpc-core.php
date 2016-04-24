@@ -123,7 +123,7 @@ class Mpc_Core {
 			Confirmation::createConfirmation($confirmation);
 		}
 	}
-	public function genericGuardianNotifications($ownerFieldId,$confirmationFieldId,$notificationTemplate,$ownerNotification="") {
+	public function genericGuardianNotifications($ownerFieldId,$confirmationFieldId,$notificationTemplate,$ownerNotificationTemplate="") {
 		$id = $this->getPetOrOwnerId($ownerFieldId);
 		$owner = new PetOwner($id);
 		$confirmation = '';
@@ -131,6 +131,7 @@ class Mpc_Core {
 		if($owner->user===false) {
 			$confirmation .= "Invalid Pet Owner ID submitted. No alerts have been sent, please verify the pet owner ID number and try again.";
 		} else {
+			$confirmation = TwilioMessage::alertPrimary($owner,$ownerNotificationTemplate);
 			if (PetOwner::isValidPetId($id)) {
 				$petNum = substr($id , 0, 1);
 				$confirmation .= TwilioMessage::alertGuardiansForPet($owner,$petNum,$notificationTemplate);
