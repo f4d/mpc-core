@@ -6,6 +6,7 @@ class PetOwner {
 	public $pets = [];
 	public $petOwnerId = '9000000000';
 	public $phone = '';
+	public $firstname = '';
 	public function __construct($key) {
 		// 9647665452 example pet owner ID
 		if (preg_match("/9\d{9}/",$key)===1) {
@@ -29,6 +30,8 @@ class PetOwner {
 			$this->data = get_metadata('user', $this->user->ID);
 			$this->petOwnerId = PetOwner::getMetaVal($this->data,'pet_owner_id');
 			$this->phone = PetOwner::getMetaVal($this->data,'mobile_phone');
+			$this->firstname = PetOwner::getMetaVal($this->data,'first_name');
+			$this->lastname = PetOwner::getMetaVal($this->data,'last_name');
 			$this->numOfPets = PetOwner::numOfPets($this->data);
 			for($i=1;$i<($this->numOfPets+1);$i++) {
 				$this->pets[$i] = new Pet($i,$this->petOwnerId,$this->data);

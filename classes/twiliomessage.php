@@ -56,13 +56,15 @@ class TwilioMessage {
 			$template = Notification::getTemplate($templateId);
 			$msg = $n->parseGuardianTemplate($template,$post,$guardian,$from);
 			$message = new TwilioMessage($guardian->mobile_phone,$msg,$guardian);
-			print_r($message);
+			//print_r($message);
 			$message->send();
 			$sent[] = $message;
 		}
 		$results = TwilioMessage::msgResults($sent);
 		$msg = "We are attempting to send ".$results->attempted." messages to Pet Guardians. ";
-		$msg .= "Warning: We were unable to send ".$results->failed." messages to Pet Guardians. ";
+		if ($results->failed > 0) {
+			$msg .= "Warning: We were unable to send ".$results->failed." messages to Pet Guardians. ";
+		}
 		return $msg;
 	}
 	static public function alertPrimary($owner,$templateId,$from='') {

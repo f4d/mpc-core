@@ -20,6 +20,8 @@ class PetOwnerTest extends Microtest {
 		$this->log("PetOwnerTest testValidOwnerId.");		
 		// 9647665452 example pet owner ID
 		$owner = new PetOwner('9647665452');
+		//print_r($owner->data);
+		$this->log("First Name: ".$owner->firstname);
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user !== false);
 	}
@@ -27,6 +29,7 @@ class PetOwnerTest extends Microtest {
 		$this->log("PetOwnerTest testInvalidOwnerId.");		
 		// 9647665452 example pet owner ID
 		$owner = new PetOwner('9000000000');
+		$this->log("First Name: ".$owner->firstname);
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user === false);
 	}
@@ -34,6 +37,7 @@ class PetOwnerTest extends Microtest {
 		$this->log("PetOwnerTest testValidPetId.");		
 		// 1274276602 example pet ID
 		$owner = new PetOwner('1274276602');
+		$this->log("First Name: ".$owner->firstname);
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user !== false);
 	}
@@ -41,6 +45,7 @@ class PetOwnerTest extends Microtest {
 		$this->log("PetOwnerTest testInvalidPetId.");		
 		// 1274276602 example pet ID
 		$owner = new PetOwner('1000000000');
+		$this->log("First Name: ".$owner->firstname);
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user === false);
 	}
@@ -62,12 +67,14 @@ class PetOwnerTest extends Microtest {
 		//cyborgk@gmail.com pet owner ID 9342390942
 		$this->log("PetOwnerTest testValidOwnerEmail.");		
 		$owner = new PetOwner('cyborgk@gmail.com');
+		$this->log("First Name: ".$owner->firstname);
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user !== false);
 	}
 	public function testInvalidEmail() {
 		$this->log("PetOwnerTest testInvalidOwnerEmail.");		
 		$owner = new PetOwner('bookoo');
+		$this->log("First Name: ".$owner->firstname);
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user === false);
 	}

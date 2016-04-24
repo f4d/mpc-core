@@ -12,5 +12,6 @@ class Guardian {
 		$this->first_name = rgar( $meta, 'first_name' );
 		$this->last_name = rgar( $meta, 'last_name' );
 		$this->email = rgar( $meta, 'email' );
+		$this->pethname = $petNum;
 	}
 }
