@@ -13,6 +13,7 @@ class Pet {
 		$this->petNum = $petNum;
 		$this->numOfGuardians = rgar(rgar($data,"p{$petNum}_how_many_guardians"),0);;
 		$this->name = rgar(rgar($data,"pet_{$petNum}_name"),0);
+		$this->type = rgar(rgar($data,"pet_{$petNum}_type"),0);
 		$this->petId = rgar(rgar($data,"pet_{$petNum}_id"),0);
 		$this->setGuardians();
 	}
@@ -43,7 +44,7 @@ class Pet {
 	}
 	private function setGuardian($guardianNum,$data) {
 		$this->guardians[$guardianNum] = new Guardian($data,$this->petId,$this->petNum,
-			$guardianNum,$this->name,$this->findPetfileUrl());
+			$guardianNum,$this->name,$this->type,$this->findPetfileUrl());
 	}
 
 	

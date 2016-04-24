@@ -35,10 +35,14 @@ class Mpc_Admin {
 <p>{{owner.firstname}} {{owner.lastname}}</p>
 
 <h5>Guardian</h5>
-<p>{{guardian.prefix}} {{guardian.first_name}} {{guardian.last_name}} {{guardian.email}} {{guardian.mobile_phone}} {{guardian.petId}} {{guardian.petname}} {{guardian.petfileUrl}}</p>
+<p>{{guardian.prefix}} {{guardian.first_name}} {{guardian.last_name}} {{guardian.email}} {{guardian.mobile_phone}} {{guardian.petId}} {{guardian.petname}} {{guardian.pettype}} {{guardian.petfileUrl}}</p>
 
 <h5>Form Fields</h5>
 <p>Use the Gravity Form ID: {{post.1}} {{post.2}} etc...</p>
+
+<h5>SMS / IVR</h5>
+
+<p>Use {{from}} to get the caller ID</p>
 
 <h4>First Responder Configuration</h4>
 <p>To configure the first responder form settings, adjust the following lines 
