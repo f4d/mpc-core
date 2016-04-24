@@ -32,7 +32,7 @@ class Mpc_Admin {
 
 <h4>Notification Template Vars</h4>
 <h5>Owner</h5>
-<p>{{owner.firstname}} {{owner.lastname}}</p>
+<p>{{petowner.firstname}} {{petowner.lastname}}</p>
 
 <h5>Guardian</h5>
 <p>{{guardian.prefix}} {{guardian.first_name}} {{guardian.last_name}} {{guardian.email}} {{guardian.mobile_phone}} {{guardian.petId}} {{guardian.petname}} {{guardian.pettype}} {{guardian.petfileUrl}}</p>

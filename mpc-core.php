@@ -49,7 +49,6 @@ class Mpc_Core {
 		$this->addGenericForm('66','11','12','1978','1976');
 	}
 
-
 	public function addGenericForm($formId,$ownerFieldId,$confirmationFieldId,$notificationTemplate) {
 		$gfn = new GenericFormNotification($formId,$ownerFieldId,$confirmationFieldId,$notificationTemplate);
 		$this->genericNotifyForms[] = $gfn;
