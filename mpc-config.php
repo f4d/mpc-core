@@ -1,6 +1,8 @@
 <?php
 class Mpc_Config {
-	
+	//Guardian Response Form
+	const GUARDIAN_RESPONSE_FORM_ID = 64;
+
 	//First Responder form config values
 	const FR_FORM_ID = '62'; //First Responder Form ID
 	const FR_FORM_OWNER_FIELD_ID = '11'; //Field ID, for PetOwnerID or PetID lookup

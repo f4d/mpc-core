@@ -3,6 +3,7 @@ class PetOwnerTest extends Microtest {
 	protected function setup() {
 		$this->log("PetOwnerTest setup.");
 		$this->add('testValidOwner');
+		$this->add('testValidOwner2');
 		$this->add('testInvalidOwner');
 		$this->add('testValidPet');
 		$this->add('testInvalidPet');
@@ -25,6 +26,15 @@ class PetOwnerTest extends Microtest {
 		$this->log("Number of pets: ".$owner->numOfPets);
 		return ($owner->user !== false);
 	}
+	public function testValidOwner2() {
+		$this->log("PetOwnerTest testValidOwnerId.");		
+		// 9505814140 pet owner ID
+		$owner = new PetOwner('9505814140');
+		//print_r($owner->data);
+		$this->log("First Name: ".$owner->firstname);
+		$this->log("Number of pets: ".$owner->numOfPets);
+		return ($owner->user !== false);
+	}	
 	public function testInvalidOwner() {
 		$this->log("PetOwnerTest testInvalidOwnerId.");		
 		// 9647665452 example pet owner ID
