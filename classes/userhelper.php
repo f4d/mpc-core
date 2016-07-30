@@ -9,6 +9,9 @@ class UserHelper {
 		}
 		return $user;
 	}
+	static public function debugMeta($userId) {
+		
+	}
 	static public function guardianResponseKey($petNum,$guardianNum) {
 		return "p{$petNum}_guardian_{$guardianNum}_response";
 	}
@@ -29,7 +32,10 @@ class UserHelper {
 		$key = UserHelper::guardianResponseKey($petNum,$guardianNum);
 		update_user_meta( $userId, $key, 1 );
 	}
-
+	static public function markGuardianDeclined($userId,$petNum,$guardianNum) {
+		$key = UserHelper::guardianResponseKey($petNum,$guardianNum);
+		update_user_meta( $userId, $key, 0 );
+	}
 	static public function updatePrimaryNumber($userId,$newNum) {
 		$key = UserHelper::PRIMARY_NUM_KEY;
 		update_user_meta( $userId, $key, $newNum );
