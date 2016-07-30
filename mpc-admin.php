@@ -33,8 +33,9 @@ class Mpc_Admin {
 <h4>Guard Response Form Processing</h4>
 
 <p>MpcCore is responsible for processing the Guardian Response Forms (Form ID 64). 
-This is done by running a post-submit Gravity Forms filter on the form.
-See MpcCore class, setupGuardianResponse() method which is called in the class constructor.</p>
+This is done by running a post-submit Gravity Forms filter on the form. The
+filter is applied in MpcCore->setupGuardianResponse(), which is called in the 
+class constructor.</p>
 
 <h4>Notification Template Vars</h4>
 <h5>Owner</h5>
