@@ -77,66 +77,29 @@ class Mpc_Core {
 		$gformStr = "gform_after_submission_{$formId}";
 		$this->add_action( $gformStr, 'updateAfterGuardianResponse' );		
 	}
-	public function createPetGuardArr($guardNum,$petNum,$dataArr) {
-		$suffix = array('prefix','first_name','last_name','email','mobile_phone');
-		$str = "p{$petNum}_guardian_{$guardNum}_";
-		$arr = [];
-		foreach($suffix as $s) {
-			$key = $str.$s;
-			$arr[$key] = $dataArr[$s];
-		}
-		return $arr;
-	} 
+
 	function updateAfterGuardianResponse($entry) {
-		
-    // Get user email from $entry (gravity form 64 entry object).
+		//get user email
     $pg_email = $entry['9'];
-  
-    // Make WP_User_Query object to search for the user with this email.
     $pg_user_query = new WP_User_Query(array('search' => $pg_email, 'search_columns' => array('user_email')));
-
-    // Get the results from the WP_User_Query object.
     $pg_users = $pg_user_query->get_results();
-
     // Check for results.
     if (!empty($pg_users)) {
-        $pg_user = $pg_users[0];        
-        $pg_user_id = $pg_user->ID;
-        $pg_petguardian_number = rgar($entry, '13');
-        //echo "Guardian: $pg_petguardian_number<br>";
-        $pg_pet_number = rgar($entry, '14');	  
-	  		$pg_response_string = rgar($entry, '15');
-	  		if($pg_response_string==='1') {
-	  			UserHelper::markGuardianAccepted($pg_user_id,$pg_pet_number,$pg_petguardian_number);
-	  		} else {
-	  			UserHelper::markGuardianDeclined($pg_user_id,$pg_pet_number,$pg_petguardian_number);
-	  		}
-	  	
-	  		// The response field now is either '0' or 'd' for declined and accepted, respectively. Updating value of number accordingly. 
-
-        // Step 2. 
-        $pg_meta = array(
-            'prefix'         => rgar($entry, '10.2'), 
-            'first_name'     => rgar($entry, '10.3'), 
-            'last_name'      => rgar($entry, '10.6'), 
-            'email'          => rgar($entry, '5'), 
-            'mobile_phone'   => rgar($entry, '12'), 
-           );
-        $pg_meta = $this->createPetGuardArr($pg_petguardian_number, $pg_pet_number,$pg_meta);
-
-  
-
-        // Assuming that it is the first pet and the first pet guardian, we proceed to update the user meta for 
-	  	// these meta fields. 
-       foreach ($pg_meta as $k => $v) {
-          //echo "$k : $v<br>";
-          update_user_meta($pg_user_id, $k, $v);
-       }
-       
-
+      $user = $pg_users[0];        
+	    $gnum = rgar($entry, '13');
+	    $pnum = rgar($entry, '14');	  
+			$response = rgar($entry, '15');
+	    $pg_meta = array(
+	        'prefix'         => rgar($entry, '10.2'), 
+	        'first_name'     => rgar($entry, '10.3'), 
+	        'last_name'      => rgar($entry, '10.6'), 
+	        'email'          => rgar($entry, '5'), 
+	        'mobile_phone'   => rgar($entry, '12'), 
+	       );
+			UserHelper::updateGuardianMeta($user->ID,$pnum,$gnum,$response,$pg_meta);
     } else {
 	  	// There were no users found with this email.
-        echo 'Something is wrong here, we did not find a Pet Owner to update with your response. Please email support and let us know <a href="mailto:support@millionpetchallenge.com?subject=Error Updating Pet Owner with Pet Guardian Response">Email Us</a>';
+        echo '<p>Something is wrong here, we did not find a Pet Owner to update with your response. Please email support and let us know <a href="mailto:support@millionpetchallenge.com?subject=Error Updating Pet Owner with Pet Guardian Response">Email Us</a></p>';
     }
 	}
 

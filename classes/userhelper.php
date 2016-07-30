@@ -40,6 +40,29 @@ class UserHelper {
 		$key = UserHelper::PRIMARY_NUM_KEY;
 		update_user_meta( $userId, $key, $newNum );
 	}
+	static public function updateGuardianMeta($userId,$pnum,$gnum,$response,$meta) {
+			if($response==='1') {
+				UserHelper::markGuardianAccepted($userId,$pnum,$gnum);
+			} else {
+				UserHelper::markGuardianDeclined($userId,$pnum,$gnum);
+			}
+	    $meta = UserHelper::createPetGuardArr($pnum, $gnum, $meta);
+			foreach ($meta as $k => $v) {
+			  //echo "$k : $v<br>";
+			  update_user_meta($userId, $k, $v);
+			}
+	}
+	public function createPetGuardArr($petNum,$guardNum,$dataArr) {
+		$suffix = array('prefix','first_name','last_name','email','mobile_phone');
+		$str = "p{$petNum}_guardian_{$guardNum}_";
+		$arr = [];
+		foreach($suffix as $s) {
+			$key = $str.$s;
+			$arr[$key] = $dataArr[$s];
+		}
+		return $arr;
+	} 
+
 	static public function updateNumbers($userId,$meta,$oldNum,$newNum) {
 		//check primary number
 		$primary = PhoneNumber::cleanup($meta[UserHelper::PRIMARY_NUM_KEY]);
