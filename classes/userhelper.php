@@ -40,25 +40,25 @@ class UserHelper {
 		$key = UserHelper::PRIMARY_NUM_KEY;
 		update_user_meta( $userId, $key, $newNum );
 	}
-	static public function updateGuardianMeta($userId,$pnum,$gnum,$response,$meta) {
-			if($response==='1') {
-				UserHelper::markGuardianAccepted($userId,$pnum,$gnum);
+	static public function updateGuardianMeta($userId, Guardian $guardian) {
+			if($guardian->response==='1') {
+				UserHelper::markGuardianAccepted($userId,$guardian->petNum,$guardian->guardNum);
 			} else {
-				UserHelper::markGuardianDeclined($userId,$pnum,$gnum);
+				UserHelper::markGuardianDeclined($userId,$guardian->petNum,$guardian->guardNum);
 			}
-	    $meta = UserHelper::createPetGuardArr($pnum, $gnum, $meta);
+	    $meta = UserHelper::createPetGuardMeta($guardian);
 			foreach ($meta as $k => $v) {
 			  //echo "$k : $v<br>";
 			  update_user_meta($userId, $k, $v);
 			}
 	}
-	public function createPetGuardArr($petNum,$guardNum,$dataArr) {
+	public function createPetGuardMeta(Guardian $guardian) {
 		$suffix = array('prefix','first_name','last_name','email','mobile_phone');
-		$str = "p{$petNum}_guardian_{$guardNum}_";
+		$str = "p{$guardian->petNum}_guardian_{$guardian->guardNum}_";
 		$arr = [];
 		foreach($suffix as $s) {
 			$key = $str.$s;
-			$arr[$key] = $dataArr[$s];
+			$arr[$key] = $guardian->$s;
 		}
 		return $arr;
 	} 

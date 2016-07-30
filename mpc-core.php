@@ -88,15 +88,16 @@ class Mpc_Core {
       $user = $pg_users[0];        
 	    $gnum = rgar($entry, '13');
 	    $pnum = rgar($entry, '14');	  
-			$response = rgar($entry, '15');
-	    $pg_meta = array(
+	    $meta = array(
 	        'prefix'         => rgar($entry, '10.2'), 
 	        'first_name'     => rgar($entry, '10.3'), 
 	        'last_name'      => rgar($entry, '10.6'), 
 	        'email'          => rgar($entry, '5'), 
 	        'mobile_phone'   => rgar($entry, '12'), 
+	        'response'   => rgar($entry, '15'), 
 	       );
-			UserHelper::updateGuardianMeta($user->ID,$pnum,$gnum,$response,$pg_meta);
+	    $guardian = new Guardian( $meta, 0, $pnum, $gnum, '', '');
+			UserHelper::updateGuardianMeta($user->ID,$guardian);
     } else {
 	  	// There were no users found with this email.
         echo '<p>Something is wrong here, we did not find a Pet Owner to update with your response. Please email support and let us know <a href="mailto:support@millionpetchallenge.com?subject=Error Updating Pet Owner with Pet Guardian Response">Email Us</a></p>';
