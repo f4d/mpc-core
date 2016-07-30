@@ -86,6 +86,8 @@ class Mpc_Core {
 		return $arr;
 	} 
 	function updateAfterGuardianResponse($entry) {
+		echo("dying.");
+		exit();
     // Get user email from $entry (gravity form 64 entry object).
     $pg_email = $entry['9'];
   
@@ -101,12 +103,9 @@ class Mpc_Core {
         $pg_user_id = $pg_user->ID;
 	  
 	  	$pg_response_string = rgar($entry, '15');
+
 	  
-	  	// The response field is '1' => $pg_response_number = '1', else if 'Declined' => $pg_response_number = '0'.
-	  	// $pg_response_number = ($pg_response_string == 'Accepted' ? 1 : 0);
-		// Old Behavior ^	  
-	  
-	  	// The response field now is either '0' or '1' for declined and accepted, respectively. Updating value of number accordingly. 
+	  	// The response field now is either '0' or 'd' for declined and accepted, respectively. Updating value of number accordingly. 
 	  	$pg_response_number = ($pg_response_string === '1' ? '1' : '0');
 
         // Step 2. 
