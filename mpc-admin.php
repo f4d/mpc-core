@@ -30,6 +30,12 @@ class Mpc_Admin {
 		$str = <<<EOT
 <h3>Mpc Core Instructions</h3>
 
+<h4>Guard Response Form Processing</h4>
+
+<p>MpcCore is responsible for processing the Guardian Response Forms (Form ID 64). 
+This is done by running a post-submit Gravity Forms filter on the form.
+See MpcCore class, setupGuardianResponse() method which is called in the class constructor.</p>
+
 <h4>Notification Template Vars</h4>
 <h5>Owner</h5>
 <p>{{petowner.firstname}} {{petowner.lastname}}</p>
