@@ -37,6 +37,21 @@ This is done by running a post-submit Gravity Forms filter on the form. The
 filter is applied in MpcCore->setupGuardianResponse(), which is called in the 
 class constructor.</p>
 
+<p>To configure the Guardian Response form settings, adjust the following lines 
+in mpc-core.php, in the main folder of the mpc-core plugin:</p>
+<ul>
+<li>	const GUARDIAN_RESPONSE_FORM_ID = '64'; //Guardian Response, Form Id </li>
+<li>	const GRD_RESP_OWNER_EMAIL_FIELD_ID = '9'; //Pet Owner Email, Field Id </li>
+<li>	const GRD_RESP_GNUM_FIELD_ID = '13'; //Guardian Number, Field Id </li>
+<li>	const GRD_RESP_PNUM_FIELD_ID = '14'; //Petfile Number, Field Id </li>
+<li>	const GRD_RESP_PREFIX_FIELD_ID = '10.2'; //Guardian Prefix, Field Id </li>
+<li>	const GRD_RESP_FIRST_NAME_FIELD_ID = '10.3'; //Guardian First Name, Field Id </li>
+<li>	const GRD_RESP_LAST_NAME_FIELD_ID = '10.6'; //Guardian Last Name, Field Id </li>
+<li>	const GRD_RESP_EMAIL_FIELD_ID = '5'; //Guardian Email, Field Id </li>
+<li>	const GRD_RESP_MOBILE_PHONE_FIELD_ID = '12'; //Guardian Mobile, Field Id </li>
+<li>	const GRD_RESP_RESPONSE_FIELD_ID = '15'; //Guardian Response, Field Id </li>
+</ul>
+
 <h4>Notification Template Vars</h4>
 <h5>Owner</h5>
 <p>{{petowner.firstname}} {{petowner.lastname}}</p>
@@ -55,11 +70,11 @@ class constructor.</p>
 <p>To configure the first responder form settings, adjust the following lines 
 in mpc-core.php, in the main folder of the mpc-core plugin:</p>
 <ul>
-<li>	const FR_FORM_ID = '62'; //First Responder Form ID
-<li>	const FR_FORM_OWNER_FIELD_ID = '11'; //Field ID, for PetOwnerID or PetID lookup
-<li>	const FR_FORM_CONFIRMATION_FIELD_ID = '12'; //Field ID, of a hidden field where confirmation message is stored
-<li>	const FR_FORM_OWNER_NOTIFICATION_ID = '1976'; //Notification Post ID, for message sent to owner
-<li>	const FR_FORM_GUARD_NOTIFICATION_ID = '1977'; //Notification Post ID, for message sent to guardians
+<li>	const FR_FORM_ID = '62'; //First Responder Form ID </li>
+<li>	const FR_FORM_OWNER_FIELD_ID = '11'; //Field ID, for PetOwnerID or PetID lookup </li>
+<li>	const FR_FORM_CONFIRMATION_FIELD_ID = '12'; //Field ID, of a hidden field where confirmation message is stored </li>
+<li>	const FR_FORM_OWNER_NOTIFICATION_ID = '1976'; //Notification Post ID, for message sent to owner </li>
+<li>	const FR_FORM_GUARD_NOTIFICATION_ID = '1977'; //Notification Post ID, for message sent to guardians </li>
 </ul>
 
 <ul>

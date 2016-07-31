@@ -80,21 +80,21 @@ class Mpc_Core {
 
 	function updateAfterGuardianResponse($entry) {
 		//get user email
-    $pg_email = $entry['9'];
+    $pg_email = $entry[Mpc_Config::GRD_RESP_OWNER_EMAIL_FIELD_ID];
     $pg_user_query = new WP_User_Query(array('search' => $pg_email, 'search_columns' => array('user_email')));
     $pg_users = $pg_user_query->get_results();
     // Check for results.
     if (!empty($pg_users)) {
       $user = $pg_users[0];        
-	    $gnum = rgar($entry, '13');
-	    $pnum = rgar($entry, '14');	  
+	    $gnum = rgar($entry, Mpc_Config::GRD_RESP_GNUM_FIELD_ID);
+	    $pnum = rgar($entry, Mpc_Config::GRD_RESP_PNUM_FIELD_ID);	  
 	    $meta = array(
-	        'prefix'         => rgar($entry, '10.2'), 
-	        'first_name'     => rgar($entry, '10.3'), 
-	        'last_name'      => rgar($entry, '10.6'), 
-	        'email'          => rgar($entry, '5'), 
-	        'mobile_phone'   => rgar($entry, '12'), 
-	        'response'   => rgar($entry, '15'), 
+	        'prefix'         => rgar($entry, Mpc_Config::GRD_RESP_PREFIX_FIELD_ID), 
+	        'first_name'     => rgar($entry, Mpc_Config::GRD_RESP_FIRST_NAME_FIELD_ID), 
+	        'last_name'      => rgar($entry, Mpc_Config::GRD_RESP_LAST_NAME_FIELD_ID), 
+	        'email'          => rgar($entry, Mpc_Config::GRD_RESP_EMAIL_FIELD_ID), 
+	        'mobile_phone'   => rgar($entry, Mpc_Config::GRD_RESP_MOBILE_PHONE_FIELD_ID), 
+	        'response'   => rgar($entry, Mpc_Config::GRD_RESP_RESPONSE_FIELD_ID), 
 	       );
 	    $guardian = new Guardian( $meta, 0, $pnum, $gnum, '', '');
 			UserHelper::updateGuardianMeta($user->ID,$guardian);
