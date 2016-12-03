@@ -208,7 +208,7 @@ class Mpc_Core {
 		add_action( $action, [$this, $method], 100, $args );
 	}
 	public function runTests($form) {
-		echo "what's going on?"; exit();
+		echo "what's going on? <br>";
 		$test = new MessageActivityTest();
 		echo $test->log;
 		/*

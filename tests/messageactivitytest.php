@@ -11,5 +11,6 @@ class MessageActivityTest extends Microtest {
 		$user = UserHelper::findUser('9123456789');
 		$this->log(print_r($user,TRUE));
 		$this->log("testing MessageActivity:GuardianResponse.");
+		return false;
 	}
 }
