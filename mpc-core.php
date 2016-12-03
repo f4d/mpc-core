@@ -28,6 +28,7 @@ require_once('tests/microtest.php');
 require_once('tests/petownertest.php');
 require_once('tests/notificationtest.php');
 require_once('tests/twiliomessagetest.php');
+require_once('tests/messageactivitytest.php');
 
 class Mpc_Core {
 	public $genericNotifyForms;
@@ -76,7 +77,7 @@ class Mpc_Core {
 		else {$formId = Mpc_Config::GUARDIAN_RESPONSE_FORM_ID; }
 		$gformStr = "gform_after_submission_{$formId}";
 		$this->add_action( $gformStr, 'updateAfterGuardianResponse' );		
-		$this->add_action( $gformStr, 'logGuardianResponseOwnerNotification' );		
+		$this->add_action( $gformStr, 'logGuardianResponseOwnerNotification', 3 );		
 	}
 
 	public function updateAfterGuardianResponse($entry) {
@@ -207,13 +208,18 @@ class Mpc_Core {
 		add_action( $action, [$this, $method], 100, $args );
 	}
 	public function runTests($form) {
-		$test = new PetOwnerTest();
+		echo "what's going on?"; exit();
+		$test = new MessageActivityTest();
+		echo $test->log;
+		/*
+		
 		echo $test->log;
 		$test = new NotificationTest();
 		echo $test->log;		
 		$test = new TwilioMessageTest();
 
 		echo $test->log;		
+		*/
 		exit();
 	}
 
