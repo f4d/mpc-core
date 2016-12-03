@@ -76,9 +76,10 @@ class Mpc_Core {
 		else {$formId = Mpc_Config::GUARDIAN_RESPONSE_FORM_ID; }
 		$gformStr = "gform_after_submission_{$formId}";
 		$this->add_action( $gformStr, 'updateAfterGuardianResponse' );		
+		$this->add_action( $gformStr, 'logGuardianResponseOwnerNotification' );		
 	}
 
-	function updateAfterGuardianResponse($entry) {
+	public function updateAfterGuardianResponse($entry) {
 		//get user email
     $pg_email = $entry[Mpc_Config::GRD_RESP_OWNER_EMAIL_FIELD_ID];
     $pg_user_query = new WP_User_Query(array('search' => $pg_email, 'search_columns' => array('user_email')));
@@ -103,9 +104,9 @@ class Mpc_Core {
         echo '<p>Something is wrong here, we did not find a Pet Owner to update with your response. Please email support and let us know <a href="mailto:support@millionpetchallenge.com?subject=Error Updating Pet Owner with Pet Guardian Response">Email Us</a></p>';
     }
 	}
-
-
-
+	public function logGuardianResponseOwnerNotification($notification, $form, $entry ) {
+		mail('cyborgk@gmail.com', 'debug', print_r($notification,TRUE));
+	}
 	public function setupTestForm() {
 		//test code
 		if ($_SERVER['SERVER_NAME']==="localhost") {$formId = '1';}
