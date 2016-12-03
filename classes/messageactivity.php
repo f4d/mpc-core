@@ -9,7 +9,7 @@ Forms to monitor for MPC Alerts (Heroku/Twilio SMS): Please update me on the log
  * MessageActivity is a utility class that helps log request and reminder messages sent to guardians.
  */
 class MessageActivity {
-	const GUARDIAN_UPDATE = "Guardian_Update";
+	const GUARDIAN_UPDATE = "Guardian_Update_Activity";
 	public $type, $source, $name, $to, $messageId, $timestamp;
 	/**
 	 * @param string $name    Name of the notification to be blocked.
