@@ -28,6 +28,8 @@ require_once('tests/microtest.php');
 require_once('tests/petownertest.php');
 require_once('tests/notificationtest.php');
 require_once('tests/twiliomessagetest.php');
+require_once('tests/submissionshelper.php');
+require_once('tests/subsequentsubmissions.php');
 require_once('tests/messageactivitytest.php');
 
 class Mpc_Core {
@@ -44,6 +46,28 @@ class Mpc_Core {
 		$this->addGenericGuardianForms();
 		$this->setupGenericGuardianForms();
 	}
+	public function setupNotificationFilters() {
+		$this->add_action( "gform_pre_submission_69", $this, 'test_submission', 10, 3 );
+		//$this->loader->add_filter( "gform_notification_69", $this, 'test_notification', 10, 3 );
+
+		//Form 67: Add pets & Guardians
+		$this->add_action( "gform_pre_submission_67", $this, 'filter_add_pets', 10, 3 );
+		//$this->loader->add_filter( "gform_notification_67", $this, 'add_pet_notification', 10, 3 );
+
+		//PETFILE 1
+		$this->add_action( "gform_after_submission_6", $this, 'logPetfileNotification', 10, 3 );
+		//PETFILE 2
+		$this->add_action( "gform_after_submission_57", $this, 'logPetfileNotification', 10, 3 );
+		//PETFILE 3
+		$this->add_action( "gform_after_submission_58", $this, 'logPetfileNotification', 10, 3 );
+		//PETFILE 4
+		$this->add_action( "gform_after_submission_59", $this, 'logPetfileNotification', 10, 3 );
+		//PETFILE 5
+		$this->add_action( "gform_after_submission_60", $this, 'logPetfileNotification', 10, 3 );
+		//$this->add_filter( "gform_notification_6", $this, 'petfile1_notification', 10, 3 );
+
+	}
+
 	public function addGenericGuardianForms() {
 		//$formId,$ownerFieldId,$confirmationFieldId,$guardianNotificationTemplate
 		$this->addGenericForm('66','12','10','1985');
@@ -104,6 +128,11 @@ class Mpc_Core {
 	  	// There were no users found with this email.
         echo '<p>Something is wrong here, we did not find a Pet Owner to update with your response. Please email support and let us know <a href="mailto:support@millionpetchallenge.com?subject=Error Updating Pet Owner with Pet Guardian Response">Email Us</a></p>';
     }
+	}
+
+	
+	public function logPetfileNotification($notification, $form, $entry ) {
+		mail('cyborgk@gmail.com', 'debug', print_r($notification,TRUE));
 	}
 	public function logGuardianResponseOwnerNotification($notification, $form, $entry ) {
 		mail('cyborgk@gmail.com', 'debug', print_r($notification,TRUE));

@@ -9,7 +9,8 @@ Forms to monitor for MPC Alerts (Heroku/Twilio SMS): Please update me on the log
  * MessageActivity is a utility class that helps log request and reminder messages sent to guardians.
  */
 class MessageActivity {
-	const GUARDIAN_UPDATE = "Guardian_Update_Activity";
+	const META_KEY_REMINDER = "GuardianRemindersSent";
+	const META_KEY_REQUEST = "GuardianRequestsSent";
 	public $type, $source, $name, $to, $messageId, $timestamp;
 	/**
 	 * @param string $name    Name of the notification to be blocked.
@@ -43,5 +44,23 @@ class MessageActivity {
 	}
 	static public function validTypes() {
 		return [MessageActivity::GUARDIAN_UPDATE];
+	}
+	static public function updateRequestsSentMeta($user_id, array $requests) {
+		$oldRequests = get_user_meta($user_id, MessageActivity::META_KEY_REQUEST, TRUE);
+		if($oldRequests==='') {$oldRequests = [];}
+		else {$oldRequests = json_decode($oldRequests);}
+		$requests = array_merge($oldRequests,$requests);
+		sort($requests);
+		update_user_meta( $user_id, MessageActivity::META_KEY_REQUEST, json_encode($requests)); 
+		//form p1g1
+
+	}
+	static public function updateRemindersSentMeta($user_id, array $requests) {
+		$oldRequests = get_user_meta($user_id, MessageActivity::META_KEY_REMINDER, TRUE);
+		if($oldRequests==='') {$oldRequests = [];}
+		else {$oldRequests = json_decode($oldRequests);}
+		$requests = array_merge($oldRequests,$requests);
+		sort($requests);
+		update_user_meta( $user_id, MessageActivity::META_KEY_REMINDER, json_encode($requests)); 
 	}
 }
