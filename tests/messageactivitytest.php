@@ -6,7 +6,7 @@ class MessageActivityTest extends Microtest {
 	}
 	protected function cleanup() {
 		//$this->scrubMeta(92,0);
-		$this->log('*Cleaned meta for user #92, cyborgk@gmail.com...');
+		//$this->log('*Cleaned meta for user #92, cyborgk@gmail.com...');
 		$this->log("MessageActivityTest cleanup.");
 	}
 	public function testGuardianResponse() {

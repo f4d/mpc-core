@@ -9,17 +9,15 @@ Forms to monitor for MPC Alerts (Heroku/Twilio SMS): Please update me on the log
  * MessageActivity is a utility class that helps log request and reminder messages sent to guardians.
  */
 class MessageActivity {
-	const META_KEY_REMINDER = "GuardianRemindersSent";
-	const META_KEY_REQUEST = "GuardianRequestsSent";
-	public $type, $source, $name, $to, $messageId, $timestamp;
+	const METAKEY = "GuardianNotifications";
+	public $type, $source, $to, $messageId, $timestamp;
 	/**
 	 * @param string $name    Name of the notification to be blocked.
 	 * @param string $to      Email of the person being notified.
 	 */
-	public function __construct($type,$source,$name,$to,$messageId=0) {
+	public function __construct($type,$source,$to,$messageId=0) {
 		$this->type = $type;
 		$this->source = $source;
-		$this->name = $name;
 		$this->to = $to;
 		$this->messageId = $messageId;
 		$date = new DateTime();
@@ -28,39 +26,17 @@ class MessageActivity {
 	public function toJson() {
 		return json_encode($this);
 	}
-	public function writeMetaData($user,$data) {
-		return $meta.$data;
-		//add_user_meta( $user_id, MessageActivity::METAKEY, $awesome_level);
-		//<?php update_user_meta( $user_id, $meta_key, $meta_value, $prev_value ); 
+	public function addNotification($userId) {
+		$metaStr = get_user_meta($userId, MessageActivity::METAKEY, TRUE);
+		$notifications = json_decode($metaStr);
+		$notifications[] = $this;
+		$metaStr = json_encode($notifications);
+		update_user_meta($userId, MessageActivity::METAKEY, $metaStr);
+		return $metaStr; 
 	}
-	static public function createGuardianReminder($source, Guardian2 $guardian, $notificationId) {
+	
+	static public function createGuardianEmail($notification,$guardian) {
+		return new MessageActivity($notification['name'],'email',$guardian->to,$notification['id']);
+	}
 
-	}
-	static public function createGuardianRequest($source, Guardian2 $guardian, $notificationId) {
-
-	}
-	static public function createGuardianUpdatedNotification() {
-
-	}
-	static public function validTypes() {
-		return [MessageActivity::GUARDIAN_UPDATE];
-	}
-	static public function updateRequestsSentMeta($user_id, array $requests) {
-		$oldRequests = get_user_meta($user_id, MessageActivity::META_KEY_REQUEST, TRUE);
-		if($oldRequests==='') {$oldRequests = [];}
-		else {$oldRequests = json_decode($oldRequests);}
-		$requests = array_merge($oldRequests,$requests);
-		sort($requests);
-		update_user_meta( $user_id, MessageActivity::META_KEY_REQUEST, json_encode($requests)); 
-		//form p1g1
-
-	}
-	static public function updateRemindersSentMeta($user_id, array $requests) {
-		$oldRequests = get_user_meta($user_id, MessageActivity::META_KEY_REMINDER, TRUE);
-		if($oldRequests==='') {$oldRequests = [];}
-		else {$oldRequests = json_decode($oldRequests);}
-		$requests = array_merge($oldRequests,$requests);
-		sort($requests);
-		update_user_meta( $user_id, MessageActivity::META_KEY_REMINDER, json_encode($requests)); 
-	}
 }

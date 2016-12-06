@@ -28,9 +28,8 @@ require_once('tests/microtest.php');
 require_once('tests/petownertest.php');
 require_once('tests/notificationtest.php');
 require_once('tests/twiliomessagetest.php');
-require_once('tests/submissionshelper.php');
-require_once('tests/subsequentsubmissions.php');
 require_once('tests/messageactivitytest.php');
+require_once('tests/subsequentsubmissionstest.php');
 
 class Mpc_Core {
 	public $genericNotifyForms;
@@ -39,32 +38,149 @@ class Mpc_Core {
 		$this->genericNotifyForms = [];
 		//run code for custom post type - NotificationPost
 		$np = new NotificationPost();
+		$this->setupNotificationFilters();
+		$this->setupAddPetHooks();
+		$this->setupPetfileHooks();
 		$this->setupGuardianResponse();
 		$this->setupTestForm();
 		$this->setupFirstResponderForm();
+		//
 		$this->setupRestUrls();	
 		$this->addGenericGuardianForms();
 		$this->setupGenericGuardianForms();
 	}
-	public function setupNotificationFilters() {
-		$this->add_action( "gform_pre_submission_69", $this, 'test_submission', 10, 3 );
-		//$this->loader->add_filter( "gform_notification_69", $this, 'test_notification', 10, 3 );
-
+	public function setupAddPetHooks() {
 		//Form 67: Add pets & Guardians
-		$this->add_action( "gform_pre_submission_67", $this, 'filter_add_pets', 10, 3 );
-		//$this->loader->add_filter( "gform_notification_67", $this, 'add_pet_notification', 10, 3 );
-
+		$this->add_action( "gform_pre_submission_67", 'addPetsNotificationLogic', 3 );
+	}
+	public function setupPetfileHooks() {
+		$arr = array('6','57','58','59','60');
+		foreach ($arr as $a) {
+			$str = "gform_pre_submission_{$a}";
+			$this->add_action( $str, 'petfileNotificationLogic', 3 );
+		}		
+	}
+	public function setupNotificationFilters() {
+		//Form 65: Registration
+		//$this->addFilter( "gform_notification_65", 'filterRegistrationNotification', 3 );
+		//Form 67: Add pets & Guardians
+		$this->addFilter( "gform_notification_67", 'filterAddPetsNotification', 3 );
+		//Form 67: Add pets & Guardians
+		$this->addFilter( "gform_notification_64", 'filterGuardianResponseNotification', 3 );
 		//PETFILE 1
-		$this->add_action( "gform_after_submission_6", $this, 'logPetfileNotification', 10, 3 );
+		$this->addFilter( "gform_notification_6", 'filterPetfile1Notification', 3 );
 		//PETFILE 2
-		$this->add_action( "gform_after_submission_57", $this, 'logPetfileNotification', 10, 3 );
+		$this->addFilter( "gform_notification_57", 'filterPetfile2Notification', 3 );
 		//PETFILE 3
-		$this->add_action( "gform_after_submission_58", $this, 'logPetfileNotification', 10, 3 );
+		$this->addFilter( "gform_notification_58", 'filterPetfile3Notification', 3 );
 		//PETFILE 4
-		$this->add_action( "gform_after_submission_59", $this, 'logPetfileNotification', 10, 3 );
+		$this->addFilter( "gform_notification_59", 'filterPetfile4Notification', 3 );
 		//PETFILE 5
-		$this->add_action( "gform_after_submission_60", $this, 'logPetfileNotification', 10, 3 );
+		$this->addFilter( "gform_notification_60", 'filterPetfile5Notification', 3 );
 		//$this->add_filter( "gform_notification_6", $this, 'petfile1_notification', 10, 3 );
+
+	}
+	public function filterPetfile1Notification($notification, $form, $entry) {
+		return $this->filterPetfileNotification($notification,$entry,1);
+	}
+	public function filterPetfile2Notification($notification, $form, $entry) {
+		return $this->filterPetfileNotification($notification,$entry,2);
+	}
+	public function filterPetfile3Notification($notification, $form, $entry) {
+		return $this->filterPetfileNotification($notification,$entry,3);
+	}
+	public function filterPetfile4Notification($notification, $form, $entry) {
+		return $this->filterPetfileNotification($notification,$entry,4);
+	}
+	public function filterPetfile5Notification($notification, $form, $entry) {
+		return $this->filterPetfileNotification($notification,$entry,5);
+	}			
+	public function filterPetfileNotification($notification,$entry,$petNum) {
+		$data = Petfile::petfilePost2Data($petNum,$_POST);
+		$guardian = GuardianHelper::findNotificationGuardian($notification['name'],$data);
+		$message = MessageActivity::createGuardianEmail($notification,$guardian);
+		$user = wp_get_current_user();
+		$meta = get_metadata('user', $user->ID);
+		$notificationMeta = $message->addNotification($user->ID,$meta);
+		mail('cyborgk@gmail.com', 'filter petfile', $notificationMeta);
+		return $notification;
+	}
+	public function filterRegistrationNotification($notification, $form, $entry) {
+		$toField = $notification['to'];
+		$to = $entry[$toField];
+		mail('cyborgk@gmail.com', 'filter registration (notification)', print_r($notification,TRUE));
+		mail('cyborgk@gmail.com', 'filter registration (entry)', print_r($entry,TRUE));
+		
+		//$user = wp_get_current_user();
+		//$meta = get_metadata('user', $user->ID);
+		//$message = new MessageActivity($notification['name'],'email',$to,$notification['id']);
+		//$notificationMeta = $message->addNotification($user->ID,$meta);
+
+		//mail('cyborgk@gmail.com', 'filter registration', $meta);
+		return $notification;
+	}
+	public function filterAddPetsNotification($notification, $form, $entry ) {		
+		$toField = $notification['to'];
+		$to = $entry[$toField];
+		$user = wp_get_current_user();
+		$meta = get_metadata('user', $user->ID);
+		$message = new MessageActivity($notification['name'],'email',$to,$notification['id']);
+		$notificationMeta = $message->addNotification($user->ID,$meta);
+		return $notification;
+	}
+	public function filterGuardianResponseNotification($notification, $form, $entry ) {
+		mail('cyborgk@gmail.com', 'filter guardian response (notification)', print_r($notification,TRUE));
+		mail('cyborgk@gmail.com', 'filter guardian response (entry)', print_r($entry,TRUE));
+		//$toField = $notification['to'];
+		//$to = $entry[$toField];
+		//$user = wp_get_current_user();
+		//$meta = get_metadata('user', $user->ID);
+		//$message = new MessageActivity($notification['name'],'email',$to,$notification['id']);
+		//$notificationMeta = $message->addNotification($user->ID,$meta);
+		//$meta = get_metadata('user', $user->ID);
+
+		return $notification;
+ 	}
+	public function addPetsNotificationLogic() {
+		$user = wp_get_current_user();
+		$meta = get_metadata('user', $user->ID);
+		$pet_owner_id = SubsequentSubmissions::petOwnerId($meta);
+
+		$data = Petfile::addPetsPost2Data($_POST);
+		$numPets = $data['how_many_pets_owned'];
+		$pets = [];
+		$notifications = [];
+		
+		for($petNum=1; $petNum<($numPets+1); $petNum++) {
+			if(SubsequentSubmissions::isPetNew($petNum, $meta)) {
+				//echo "We got one!";
+				//if new pet, add guardians request to send list
+			
+				$numGuardians = $data["num_guardians_p$i"]; //find all guardians
+				
+				for($g=1; $g<$numGuardians+1;$g++) {
+					$notifications[] = SubsequentSubmissions::createNotification('request',$petNum,$g);
+				}
+				
+				//mail('cyborgk@gmail.com', 'add pets data', print_r($data,TRUE));
+				
+			} else {
+				//add pets to array for later
+				$pets[] = new Pet( $petNum, $pet_owner_id, $meta );
+			}
+		}
+		//now we take care of pets that aren't new
+		foreach($pets as $pet) {				
+			$newPet = Petfile::getPet($pet->petNum,$data);
+			$notifications = SubsequentSubmissions::writeAddPetsNotifications($pet,$newPet,$notifications);
+		}
+
+		$json = json_encode($notifications);
+		$_POST['input_239'] = $json;
+		mail('cyborgk@gmail.com', 'add pets ->pets', $json);
+	}
+
+	public function petfileNotificationLogic() {
 
 	}
 
@@ -130,13 +246,7 @@ class Mpc_Core {
     }
 	}
 
-	
-	public function logPetfileNotification($notification, $form, $entry ) {
-		mail('cyborgk@gmail.com', 'debug', print_r($notification,TRUE));
-	}
-	public function logGuardianResponseOwnerNotification($notification, $form, $entry ) {
-		mail('cyborgk@gmail.com', 'debug', print_r($notification,TRUE));
-	}
+
 	public function setupTestForm() {
 		//test code
 		if ($_SERVER['SERVER_NAME']==="localhost") {$formId = '1';}
@@ -236,9 +346,11 @@ class Mpc_Core {
 	public function add_action($action,$method, $args=1) {
 		add_action( $action, [$this, $method], 100, $args );
 	}
+	public function addFilter($action,$method,$args=1) {
+		add_filter( $action, [$this, $method], 100, $args );
+	}
 	public function runTests($form) {
-		echo "what's going on? <br>";
-		$test = new MessageActivityTest();
+		$test = new SubsequentSubmissionsTest();
 		echo $test->log;
 		/*
 		
