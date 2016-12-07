@@ -78,8 +78,15 @@ class Petfile {
 			"p{$petNum}_guardian_4_email"=>'182',
 			"p{$petNum}_guardian_5_email"=>'185'
 		);
+		$data["num_guardians_p{$petNum}"] = 0;
+		$stop = FALSE;
 		foreach($formFields as $key => $id) {
 			$data[$key] = $post["input_$id"];
+			if($data[$key]=='') {
+				$stop = TRUE;
+			} elseif (!$stop) {
+				$data["num_guardians_p{$petNum}"] += 1;
+			}
 		}
 		return $data;
 	}

@@ -55,9 +55,12 @@ class Mpc_Core {
 	}
 	public function setupPetfileHooks() {
 		$arr = array('6','57','58','59','60');
+		$i = 1;
 		foreach ($arr as $a) {
 			$str = "gform_pre_submission_{$a}";
-			$this->add_action( $str, 'petfileNotificationLogic', 3 );
+			$action = "onSubmitPetfile{$i}";
+			$this->add_action( $str, $action, 1 );
+			$i++;
 		}		
 	}
 	public function setupNotificationFilters() {
@@ -141,7 +144,7 @@ class Mpc_Core {
 
 		return $notification;
  	}
-	public function addPetsNotificationLogic() {
+	public function addPetsNotificationLogic($form) {
 		$user = wp_get_current_user();
 		$meta = get_metadata('user', $user->ID);
 		$pet_owner_id = SubsequentSubmissions::petOwnerId($meta);
@@ -180,8 +183,33 @@ class Mpc_Core {
 		mail('cyborgk@gmail.com', 'add pets ->pets', $json);
 	}
 
-	public function petfileNotificationLogic() {
+	public function onSubmitPetfile1() {
+		Mpc_Core::petfileNotificationLogic(1);
+	}
+	public function onSubmitPetfile2() {
+		Mpc_Core::petfileNotificationLogic(2);
+	}
+	public function onSubmitPetfile3() {
+		Mpc_Core::petfileNotificationLogic(3);
+	}
+	public function onSubmitPetfile4() {
+		Mpc_Core::petfileNotificationLogic(4);
+	}
+	public function onSubmitPetfile5() {
+		Mpc_Core::petfileNotificationLogic(5);
+	}
 
+	public function petfileNotificationLogic($petNum) {
+		$user = wp_get_current_user();
+		$meta = get_metadata('user', $user->ID);
+		$pet_owner_id = SubsequentSubmissions::petOwnerId($meta);
+		$pet = new Pet( $petNum, $pet_owner_id, $meta );
+		$data = Petfile::petfilePost2Data($petNum,$_POST);
+		$newPet = Petfile::getPet($pet->petNum,$data);
+		$notifications = SubsequentSubmissions::writeAddPetsNotifications($pet,$newPet,[]);
+		$json = json_encode($notifications);
+		$_POST['input_205'] = $json;
+		mail('cyborgk@gmail.com', 'petfileNotificationLogic', $json);
 	}
 
 	public function addGenericGuardianForms() {

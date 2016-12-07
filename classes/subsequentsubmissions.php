@@ -7,59 +7,6 @@ class SubsequentSubmissions {
 
 	}
 
-	/**
-	 * getNotificationStr generates correct data
-	 * based on the user meta messageActivity and the formTyoe
-	 * formTypes: 
-	 * 'registration' (65)
-	 * 'add-pets' (67)
-	 * 'petfile' (6,57,58,59,60)
-	 * 
-	 * @param  string $formtype ('registration','add-pets', or 'petfile')
-	 * @return n/a
-	 */	
-	public function getNotificationStr($formType) {
-
-	}
-	
-
-	
-	/**
-	 * filter_add_pets runs when the Add Pets & Guardians form is submitted
-	 * @param  array $form   gravity forms form data
-	 * @return n/a
-	 */
-	public function filter_add_pets($form) {
-		$user = wp_get_current_user();
-		$meta = get_metadata('user', $user->ID);
-		$data = Pet2::post2Data($_POST);
-		//print_r($data);
-		$pet_owner_id = SubsequentSubmissions::petOwnerId($meta);	
-		//get the number of pets from form, NOT meta!
-		$numPets = (int) rgar($_POST,'input_59');
-		$pets = array();
-		$killArr = [];
-		for($i=1;$i<($numPets+1);$i++) {
-			if(SubsequentSubmissions::isPetNew($i,$meta)) {
-				//echo "We got one!";
-				//if new pet, add guardians reminders to kill list
-				$killArr = array_merge($killArr,KillItem::killReminders($i));
-			} else {
-				$pets[$i] = new Pet( $i, $pet_owner_id, $meta );
-			}
-		}
-		//now we take care of pets that aren't new
-		foreach($pets as $pet) {
-			$newPet = Pet2::getPet($pet->petfile,$data);
-			//print_r($newPet);
-			$killArr = Pet2::checkGuardianNotifications($pet,$newPet,$killArr);
-		}
-		$json = Notify::createJson($killArr);
-		$_POST['input_239'] = $json;
-		GFCommon::log_debug( __METHOD__ . '(): logging Add Pet json-kill-list: '.print_r($json, true) );
-	}
-
-
 	static public function isPetNew($petnum,$meta) {
 		$metaname = SubsequentSubmissions::meta($meta,"pet_{$petnum}_name");
 		$numberPets = intval(SubsequentSubmissions::numberOfPets($meta));
