@@ -65,10 +65,10 @@ class Mpc_Core {
 	}
 	public function setupNotificationFilters() {
 		//Form 65: Registration
-		//$this->addFilter( "gform_notification_65", 'filterRegistrationNotification', 3 );
+		$this->addFilter( "gform_notification_65", 'filterRegistrationNotification', 3 );
 		//Form 67: Add pets & Guardians
 		$this->addFilter( "gform_notification_67", 'filterAddPetsNotification', 3 );
-		//Form 67: Add pets & Guardians
+		//Form 64: Guardian Response
 		$this->addFilter( "gform_notification_64", 'filterGuardianResponseNotification', 3 );
 		//PETFILE 1
 		$this->addFilter( "gform_notification_6", 'filterPetfile1Notification', 3 );
@@ -105,21 +105,17 @@ class Mpc_Core {
 		$user = wp_get_current_user();
 		$meta = get_metadata('user', $user->ID);
 		$notificationMeta = $message->addNotification($user->ID,$meta);
-		mail('cyborgk@gmail.com', 'filter petfile', $notificationMeta);
 		return $notification;
 	}
 	public function filterRegistrationNotification($notification, $form, $entry) {
 		$toField = $notification['to'];
 		$to = $entry[$toField];
-		mail('cyborgk@gmail.com', 'filter registration (notification)', print_r($notification,TRUE));
-		mail('cyborgk@gmail.com', 'filter registration (entry)', print_r($entry,TRUE));
 		
-		//$user = wp_get_current_user();
-		//$meta = get_metadata('user', $user->ID);
-		//$message = new MessageActivity($notification['name'],'email',$to,$notification['id']);
-		//$notificationMeta = $message->addNotification($user->ID,$meta);
+		$user = get_user_by( "email", $entry['2'] );
+		$meta = get_metadata('user', $user->ID);
+		$message = new MessageActivity($notification['name'],'email',$to,$notification['id']);
+		$notificationMeta = $message->addNotification($user->ID,$meta);
 
-		//mail('cyborgk@gmail.com', 'filter registration', $meta);
 		return $notification;
 	}
 	public function filterAddPetsNotification($notification, $form, $entry ) {		
@@ -132,15 +128,12 @@ class Mpc_Core {
 		return $notification;
 	}
 	public function filterGuardianResponseNotification($notification, $form, $entry ) {
-		mail('cyborgk@gmail.com', 'filter guardian response (notification)', print_r($notification,TRUE));
-		mail('cyborgk@gmail.com', 'filter guardian response (entry)', print_r($entry,TRUE));
-		//$toField = $notification['to'];
-		//$to = $entry[$toField];
-		//$user = wp_get_current_user();
-		//$meta = get_metadata('user', $user->ID);
-		//$message = new MessageActivity($notification['name'],'email',$to,$notification['id']);
-		//$notificationMeta = $message->addNotification($user->ID,$meta);
-		//$meta = get_metadata('user', $user->ID);
+		$toField = $notification['to'];
+		$to = $entry[$toField];
+		$user = get_user_by( "email", $entry['9'] );
+		$meta = get_metadata('user', $user->ID);
+		$message = new MessageActivity($notification['name'],'email',$to,$notification['id']);
+		$notificationMeta = $message->addNotification($user->ID,$meta);
 
 		return $notification;
  	}
@@ -151,6 +144,7 @@ class Mpc_Core {
 
 		$data = Petfile::addPetsPost2Data($_POST);
 		$numPets = $data['how_many_pets_owned'];
+		
 		$pets = [];
 		$notifications = [];
 		
@@ -159,14 +153,12 @@ class Mpc_Core {
 				//echo "We got one!";
 				//if new pet, add guardians request to send list
 			
-				$numGuardians = $data["num_guardians_p$i"]; //find all guardians
+				$numGuardians = $data["num_guardians_p$petNum"]; //find all guardians
 				
 				for($g=1; $g<$numGuardians+1;$g++) {
 					$notifications[] = SubsequentSubmissions::createNotification('request',$petNum,$g);
 				}
-				
-				//mail('cyborgk@gmail.com', 'add pets data', print_r($data,TRUE));
-				
+								
 			} else {
 				//add pets to array for later
 				$pets[] = new Pet( $petNum, $pet_owner_id, $meta );
@@ -270,7 +262,7 @@ class Mpc_Core {
 			UserHelper::updateGuardianMeta($user->ID,$guardian);
     } else {
 	  	// There were no users found with this email.
-        echo '<p>Something is wrong here, we did not find a Pet Owner to update with your response. Please email support and let us know <a href="mailto:support@millionpetchallenge.com?subject=Error Updating Pet Owner with Pet Guardian Response">Email Us</a></p>';
+        //echo '<p>Something is wrong here, we did not find a Pet Owner to update with your response. Please email support and let us know <a href="mailto:support@millionpetchallenge.com?subject=Error Updating Pet Owner with Pet Guardian Response">Email Us</a></p>';
     }
 	}
 
@@ -378,15 +370,14 @@ class Mpc_Core {
 		add_filter( $action, [$this, $method], 100, $args );
 	}
 	public function runTests($form) {
-		$test = new SubsequentSubmissionsTest();
-		echo $test->log;
+		$test = new TwilioMessageTest();
+		echo $test->log;		
 		/*
+		//$test = new SubsequentSubmissionsTest();
+		//echo $test->log;
 		
 		echo $test->log;
 		$test = new NotificationTest();
-		echo $test->log;		
-		$test = new TwilioMessageTest();
-
 		echo $test->log;		
 		*/
 		exit();

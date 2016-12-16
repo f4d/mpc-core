@@ -34,7 +34,7 @@ class UserHelper {
 	}
 	static public function markGuardianDeclined($userId,$petNum,$guardianNum) {
 		$key = UserHelper::guardianResponseKey($petNum,$guardianNum);
-		update_user_meta( $userId, $key, 0 );
+		update_user_meta( $userId, $key, 'd' );
 	}
 	static public function updatePrimaryNumber($userId,$newNum) {
 		$key = UserHelper::PRIMARY_NUM_KEY;

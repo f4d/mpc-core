@@ -4,12 +4,18 @@ class TwilioMessage {
 	public function __construct($to,$msg,$dataObj) {
 		$this->result = 0;
 		$this->to = PhoneNumber::cleanup($to);
-		$this->msg = $msg;
+		$this->msg = html_entity_decode($msg, ENT_QUOTES | ENT_XML1, 'UTF-8');
+		$this->msg = str_replace("\\", "", $this->msg);
+		mail('cyborgk@gmail.com', 'twilio message', $this->msg);
 		$this->callbackUrl = TwilioHelper::prepUrl('/wp-json/petguardian/v1/twilio-response');
 		$this->dataObj = $dataObj;
 	}	
 	public function send() {
 		$phoneNumber = PhoneNumber::lookup($this->to);
+		mail('cyborgk@gmail.com', 'twilio message 2', $this->msg);
+		//$encoding = mb_detect_encoding($this->msg);
+		//mail('cyborgk@gmail.com', 'twilio encoding', print_r($encoding,TRUE));
+
 		//SKIP BAD NUMBERS
 		if (PhoneNumber::invalid($this->to) || $phoneNumber->health == "bad") {
 			$this->result = -1;

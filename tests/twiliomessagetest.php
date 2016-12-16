@@ -11,8 +11,8 @@ class TwilioMessageTest extends Microtest {
 		$this->log("TwilioMessageTest cleanup.");
 		$owner = new PetOwner('cyborgk@gmail.com');		
 		//UserHelper::markGuardianAccepted($owner->user->ID,2,1);
-		UserHelper::updateGuardianNumber($owner->user->ID,2,1,'(555)555-5555');
-		UserHelper::updateGuardianNumber($owner->user->ID,3,1,'(773)609-2730');
+		//UserHelper::updateGuardianNumber($owner->user->ID,2,1,'(555)555-5555');
+		//UserHelper::updateGuardianNumber($owner->user->ID,3,1,'(773)609-2730');
 	}
 	public function updateGuardianAccepted($userId,$petNum,$guardianNum) {
 		$key = UserHelper::guardianResponseKey($petNum,$guardianNum);
