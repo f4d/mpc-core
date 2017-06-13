@@ -24,12 +24,12 @@ require_once('mpc-admin.php');
 require_once('vendor/autoload.php');
 require_once('classes/autoload.php');
 
-require_once('tests/microtest.php');
-require_once('tests/petownertest.php');
-require_once('tests/notificationtest.php');
-require_once('tests/twiliomessagetest.php');
-require_once('tests/messageactivitytest.php');
-require_once('tests/subsequentsubmissionstest.php');
+// require_once('tests/microtest.php');
+// require_once('tests/petownertest.php');
+// require_once('tests/notificationtest.php');
+// require_once('tests/twiliomessagetest.php');
+// require_once('tests/messageactivitytest.php');
+// require_once('tests/subsequentsubmissionstest.php');
 
 class Mpc_Core {
 	public $genericNotifyForms;
@@ -61,7 +61,7 @@ class Mpc_Core {
 			$action = "onSubmitPetfile{$i}";
 			$this->add_action( $str, $action, 1 );
 			$i++;
-		}		
+		}
 	}
 	public function setupNotificationFilters() {
 		//Form 65: Registration
@@ -172,7 +172,7 @@ class Mpc_Core {
 
 		$json = json_encode($notifications);
 		$_POST['input_239'] = $json;
-		mail('cyborgk@gmail.com', 'add pets ->pets', $json);
+		// mail('davenewcomb+f4d@gmail.com', 'add pets ->pets', $json);
 	}
 
 	public function onSubmitPetfile1() {
@@ -196,12 +196,14 @@ class Mpc_Core {
 		$meta = get_metadata('user', $user->ID);
 		$pet_owner_id = SubsequentSubmissions::petOwnerId($meta);
 		$pet = new Pet( $petNum, $pet_owner_id, $meta );
+		//* $petDebug = print_r($pet, true);
+		//* mail('davenewcomb+f4d@gmail.com','petfile $pet obj',$petDebug);
 		$data = Petfile::petfilePost2Data($petNum,$_POST);
 		$newPet = Petfile::getPet($pet->petNum,$data);
 		$notifications = SubsequentSubmissions::writeAddPetsNotifications($pet,$newPet,[]);
 		$json = json_encode($notifications);
 		$_POST['input_205'] = $json;
-		mail('cyborgk@gmail.com', 'petfileNotificationLogic', $json);
+		//* mail('davenewcomb+f4d@gmail.com', 'petfileNotificationLogic', $json);
 	}
 
 	public function addGenericGuardianForms() {
@@ -237,7 +239,7 @@ class Mpc_Core {
 		else {$formId = Mpc_Config::GUARDIAN_RESPONSE_FORM_ID; }
 		$gformStr = "gform_after_submission_{$formId}";
 		$this->add_action( $gformStr, 'updateAfterGuardianResponse' );		
-		$this->add_action( $gformStr, 'logGuardianResponseOwnerNotification', 3 );		
+		$this->add_action( $gformStr, 'logGuardianResponseOwnerNotification', 3 );
 	}
 
 	public function updateAfterGuardianResponse($entry) {
